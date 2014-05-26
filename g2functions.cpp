@@ -109,7 +109,10 @@ long double avgPot(int s) //Find the average potential energy
     #pragma omp parallel for private (j,k) reduction(+:pot) num_threads (tot_num_thrds)
         LOOP//loops over i,j,k
         {
-            pot+=potential(s,i,j,k);//sums the potential at every point
+            //sums the potential at every point
+            pot += 0;
+
+            // if there's a potential function, use: potential(s,i,j,k);
         }
     
     return pot/gridsize;//averages over the grid
@@ -146,7 +149,7 @@ long double adf(int s)//the friedman equation
 
 long double ddfield( int s, int fld, int i, int j, int k)//evaluates the double time derivative of the field fld (s) at i,j,k.
 {
-   return laplacian(field[s][fld],i,j,k)/a[s]/a[s] - dVdf(s,fld,i,j,k) – 3*adot[s]/a[s]*dfield[s][fld][i][j][k];
+   return laplacian(field[s][fld],i,j,k)/a[s]/a[s] - 3*adot[s]/a[s]*dfield[s][fld][i][j][k];
 }
 
 

@@ -1,7 +1,7 @@
 COMPILER = g++
 OFLAG = -O3
 FLAGS = -m64 -g -fopenmp $(OFLAG)
-LINKS= -L/opt/local/lib -lfftw3l_threads -lfftw3l_omp -lfftw3l  
+LINKS= -L/opt/local/lib -lfftw3l  
 
 do: fclean dirmake oclean compile 
 
