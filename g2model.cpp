@@ -23,8 +23,7 @@
 void modelinfo(FILE *info)
 {
     // Name and description of model
-    fprintf(info,"Basic 3-d wave equation solver.\n");
-
+    fprintf(info,"Very basic 3-d wave equation solver.\n");
 }
 
 
@@ -41,20 +40,17 @@ void modelinfo(FILE *info)
 
 void initfields()//here the user may decide how the fields will be initialized
 {
-    static int first=0,s=0;
+    static int first=0, s=0;
     DECLARE_INDEX
     
-    if(first==0)
+    // loops over fld,i,j,k
+    fldLOOP
     {
-        fldLOOP//loops over fld i,j,k
-        {
-			field[s][fld][i][j][k]=f0[fld];//initialize each field as its initial value
-            dfield[s][fld][i][j][k]=df0[fld];// initialize each field derivative as its initial value
-        }
-   	
+        // initialize each field as its initial value
+        field[s][fld][i][j][k] = f0[fld];
+        // initialize each field derivative as its initial value
+        dfield[s][fld][i][j][k] = df0[fld];
     }
-    	
-    calcEnergy(0); //This is important -- needed for first step of evolution
 
 }
 #undef PHI

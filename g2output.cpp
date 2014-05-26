@@ -171,7 +171,7 @@ void outputslice()//externally called function for outputing the data from the r
         //this routine outputs time, scalefactor, scalfactor derivative, hubble constant, and energy componets at each slice output
         slicetime=fopen("./slices/slices_time.dat","a");
         //slicetime=fopen("slices_time.dat","a");
-        fprintf(slicetime,"%Le %Le %Le %Le %Le %Le %Le\n", t,a[0],adot[0],adot[0]/a[0],edkin[0],edpot[0],edgrad[0]);
+        fprintf(slicetime,"%Le\n", t);
         fclose(slicetime);
         
         first++;
@@ -211,10 +211,8 @@ void output_parameters()//this creats info.dat which contains information about 
         fprintf(info,"L=%Le\n",L);
         fprintf(info,"dt=%Le, dx=%Le\n",dt,dx);
         fprintf(info,"end time=%Le\n",endtime);
-        fprintf(info,"B=%Le\n",rescale_B);
-        fprintf(info, "\nUsing %s expansion\n",expanType);
+
         fprintf(info, "\nUsing %d cores\n",tot_num_thrds);
-        fprintf(info, "%d momentum bins for spectra\n",((int)(sqrt(3.)*N/2+1)));
         time(&tStart);
         fprintf(info,"\nRun began at %s",ctime(&tStart)); // Output date in readable form
         first=0;
@@ -226,7 +224,6 @@ void output_parameters()//this creats info.dat which contains information about 
         fprintf(info,"\nRun from t=%Le to t=%Le took ",starttime,t);
         readable_time((int)(tFinish-tStart),info);
         fprintf(info,"\n");
-        fprintf(info, "\nFinal scale factor is %Le\n",a[0]);
     }
     
     fflush(info);
