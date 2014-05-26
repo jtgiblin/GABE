@@ -1,3 +1,14 @@
+# GABE stuff
+
+slices
+slices/*
+
+gabe
+info.txt
+
+
+# Generic stuff
+
 # Compiled Object files
 *.slo
 *.lo
