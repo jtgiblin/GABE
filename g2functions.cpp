@@ -146,7 +146,7 @@ long double adf(int s)//the friedman equation
 
 long double ddfield( int s, int fld, int i, int j, int k)//evaluates the double time derivative of the field fld (s) at i,j,k.
 {
-   return laplacian(field[s][fld],i,j,k)/a[s]/a[s] - dVdf(s,fld,i,j,k) – 3*adot[s]/a[s]*dfield[s][fld][i][j][k];
+   return laplacian(field[s][fld],i,j,k)/a[s]/a[s] - dVdf(s,fld,i,j,k) - 3*adot[s]/a[s]*dfield[s][fld][i][j][k];
 }
 
 
