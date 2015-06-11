@@ -5,12 +5,15 @@
 /*
  This header file contains all the functions which are independent of the model needed to initialize the fields and random initial conditions.
  
- Copyright Kenyon College
- John T. Giblin, Jr
- Tate Deskins and Hillary Child
-*/
+ Current Edit
+ by: Tate Deskins
+ date (mm.dd.yyyy): 08.10.2012
+ */
 
 #include "g2header.h" //contains declerations for program functions.
+
+/*************IMPORTANT NOTE*************/
+//not currently generalized to use the typedef gNum due to fftw having different protocals for double long double etc.
 
 /** expansion initialization **/
 void initexpansion()
@@ -22,7 +25,7 @@ void initexpansion()
     //addot[1]=0;
     a[1]=1;
     adot[1]=0;
-    addot[1]=0;
+    //addot[1]=0;
     calcEnergy(0);
 #elif expansion_type==1
     

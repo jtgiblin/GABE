@@ -1,7 +1,8 @@
-COMPILER = g++
+//COMPILER = g++
+COMPILER = /usr/local/bin/g++-4.9 #Because XCode is Lame
 OFLAG = -O3
 FLAGS = -m64 -g -fopenmp $(OFLAG)
-LINKS= -L/opt/local/lib -lfftw3l_threads -lfftw3l_omp -lfftw3l  
+LINKS = -lfftw3l_threads -lfftw3l  # -L/opt/local/lib -lfftw3l_omp
 
 do: fclean dirmake oclean compile 
 
@@ -31,15 +32,23 @@ g2init.o: g2header.h g2parameters.h g2init.cpp
 	$(COMPILER) -c $(FLAGS)  g2init.cpp
 
 oclean: 
-	rm -f *.o 
+	rm -f *.o
 
 fclean:
-#	rm -r gabe2_0.dSYM
-	rm -f gabe2_0 *.dat *.txt
+	rm -f gabe *.dat *.txt
 	rm -f ./slices/*.dat
-	
+	rm -f ./energy/*.dat
+	rm -f ./gravrhoslices/*.dat
+	rm -f ./source/*.dat
+		
 dirmake:
-	@ if test -d slices; then echo directory "'slices'" exists; else mkdir slices; echo made directory "'slices'"; fi	
+	@ if test -d slices; then echo directory "'slices'" exists; else mkdir slices; echo made directory "'slices'"; fi
+
+	@ if test -d energy; then echo directory “’energy’” exists; else mkdir energy; echo made directory “’energy’”; fi
+
+	@ if test -d gravrhoslices; then echo directory “’gravrhoslices’” exists; else mkdir gravrhoslices; echo made directory “’gravrhoslices’”;fi
+
+	@ if test -d source; then echo directory “source” exists; else mkdir source; echo made directory “source”;fi	
 
 
 run: clean compile
