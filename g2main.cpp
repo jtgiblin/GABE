@@ -79,7 +79,7 @@ int main()
 #endif
 		screenout();//outputs current pr time to screen
 		outputslice();//outputs slice values to file
-        nancheck();
+      //  nancheck();
 	}
 #if spec_output==1
     specClear();//clears fftw stuff needed for spectra at the end of the run

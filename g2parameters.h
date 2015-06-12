@@ -24,14 +24,14 @@ const gNum df0[num_flds]={0.};//array storing intial h_{ij} field derivative val
 
 const gNum c=1.; //speed of light, shouldn't change, if you do, fix all equations
 const gNum omega = 0.142; // Radial velocity of source
-const gNum rstar =8.;//This is the size of the vainshtein radius (where rb=2r_o)
-const gNum sigma2 = 0.02; // Value of sigma-squared*2 in the gaussian energy density. May not need this value if energy density is not gaussian or some other form.
+const gNum rstar =10.;//This is the size of the vainshtein radius (where rb=2r_o)
+const gNum sigma2 = 0.2; // Value of sigma-squared*2 in the gaussian energy density. May not need this value if energy density is not gaussian or some other form.
 const gNum alpha = 1.; // This is the proportionality constant relating the energy densities of the two masses in binary. alpha = roh_2 / roh_1
 //R0 shall be assumed to stay constant
 
 #define gallileon_order 3// 2 for linear 3 for cubic 4 for quartic eventually 5 for quintic
 //the following assume A=rb/2
-const gNum kappa = sqrt((1.+alpha)/(M_PI*omega))*rstar*rstar*rstar; //used in the Galileon EOM
+const gNum kappa = rstar*rstar*rstar*2.*sqrt((1.+alpha)/(M_PI*omega));; //used in the Galileon EOM
 const gNum kappa2 = kappa*kappa; //Kappa-squared
 const gNum lambda = 8.*sqrt(M_PI*omega/(1.+alpha));
 /***************************
@@ -41,11 +41,11 @@ const gNum lambda = 8.*sqrt(M_PI*omega/(1.+alpha));
 #define tot_num_thrds 6//total (max) number of threads to run durring program
 const int randseed=44463132;//seed for rand number generator
 const gIdx N=256;//number of points along one side of grid
-const gNum L=25.;// length of one side of box in prgm units
+const gNum L=50.;// length of one side of box in prgm units
 const gNum starttime=0.;//start time of simulation
 const gNum endtime=100.;//end time of simulations
-const gNum dt=0.005;//time step size
-#define int_order 4//integration order (2 or 4)
+const gNum dt=0.002;//time step size
+#define int_order 2//integration order (2 or 4)
 #define expansion_type 0//(0 for no expansion 1 for evolving from adot 2 for user defined expansion 
 //(will need to adjust functions file (adot and such) and type two evolution in the step() function fnd g2init.cpp initexpansion() for user defined expansion )
 
@@ -64,15 +64,15 @@ const gNum dt=0.005;//time step size
  output parameters
  *****************/
 const gNum screentime=60;// in seconds how frequently output prgm time to screen
-const int slicewait=1;//how many dt's to wait between outputs (1 for no waiting) if 0 then slicenumber will be used.
+const int slicewait=0;//how many dt's to wait between outputs (1 for no waiting) if 0 then slicenumber will be used.
 const int slicenumber=300;//approx number of slices to output (only used if slicewait=0)
 const int field_sliceskip=4;//howmany points to print in field profile (1 is every, 2 every two, 3 every three...)
 const int specnumber=1; //how many spectra to out put (1= every output slice 2 every two....)
-#define field_outdim 3// number of dimensions of output in field profile (0 for no output)
+#define field_outdim 1// number of dimensions of output in field profile (0 for no output)
 #define spec_output  0// 1 to ouptut spectra, 0 for no spectra output
 #define var_output   0// 1 to output mean and varraince, 0 for no varriance output
 #define slice_orient 0// 0 for xy-slice; 1 for yz-slice; 2 for xz-slice
-#define nan_check 1//1 to have ind nan-check
+#define nan_check 0//1 to have ind nan-check
 
 /*********************************
  These are important DO NOT CHANGE
