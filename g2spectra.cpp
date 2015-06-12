@@ -14,6 +14,9 @@
 
 #include "g2header.h" //contains declerations for program functions.
 
+/*************IMPORTANT NOTE*************/
+//not currently generalized to use the typedef gNum due to fftw having different protocals for double long double etc.
+
 #if spec_output==1
 
 static long double *indft; //decleares input field for dft
@@ -24,7 +27,7 @@ void specOut(int first)
 {
     
     DECLARE_INDEX
-    const long double spec_norm=pow(sqrt(2.*M_PI)/L,3.); //normalization factor for the spectra
+    const long double spec_norm=pow(dx/sqrt(2.*M_PI),3.); //normalization factor for the spectra
     int px,py,pz;//trackes real place in momentum grid
     long double pmagnitude;//stores the magnitude of the momentum vector for current point
     const int numbins=((int)(sqrt(3.)*N/2+1));//number of spectra bins based off of size of the grid
@@ -44,7 +47,7 @@ void specOut(int first)
     for(fld=0;fld<nflds;fld++){
         LOOP//this loop asigns the field values to the input array
         {
-                indft[k + N*(j + N*i)]=field[0][fld][i][j][k];
+                indft[k + N*(j + N*i)]=field[INDEX(0,fld,i,j,k)];
         }
         
         fftwl_execute(spec_plan);//performs the dft
@@ -93,14 +96,14 @@ void specOut(int first)
     //Print the spectra to a file
     
     static FILE *slicespectra;
-    static char name[30];
+    static char name[500];
     
     sprintf(name,"./slices/slices_spectra_%d.dat", first);
     slicespectra=fopen(name,"w");
     
     for(i=0;i<numbins;i++)
     {
-        fprintf(slicespectra,"%Le", sqrt(2*M_PI)*i/L);//this prints the mode
+        fprintf(slicespectra,"%Le", 2*M_PI)*i/L;//this prints the mode
         for(fld=0;fld<nflds;fld++){
             fprintf(slicespectra," %Le", spec_power[fld][i]);//and the power associated with it for each field
         }
