@@ -70,7 +70,7 @@ gNum potential(INDECIES_f)//user defined potential
 
 gNum profile(gNum r)
 {
-    return 0.5+0.5*tanh((.1*r -2.5));
+    return 0.49330714907571516+0.5*tanh((.1*r -2.5));
 }
 
 
@@ -145,7 +145,7 @@ gNum galileon2(INDECIES_f,gNum tin)
               +dfdkk(PI)
               )*kappa
 #if gallileon_order>=4 //need to check that it agrees
-       6.*(
+       +6.*(
            dfdij(PI)*dfdij(PI)
            +dfdik(PI)*dfdik(PI)
            +dfdjk(PI)*dfdjk(PI)
