@@ -3,7 +3,7 @@
  **********************************/
 
 /*
- This header file contains all the functions which are independent of the model needed to evolve the fields by the Runge-Kutta Second order method (for first order finite derivatives). The incr and decr commands set periodic boundary conditions on the lattice durring evolution.
+ This header file contains all the functions which are independent of the model needed to evolve the fields by the Runge-Kutta Second order method (for first order finite derivatives). The incr and decr commands set periodic boundary conditions on the lattice during evolution.
  
  Copyright (2013):
  Kenyon College
@@ -12,7 +12,7 @@
  Last Updated: 06.27.2013
  */
 
-#include "g2header.h" //contains declerations for program functions.
+#include "g2header.h" //contains decelerations for program functions.
 
 gNum pw2(gNum x)//squares long doubles
 {
@@ -44,7 +44,7 @@ gNum laplacian(gNum f[], INDECIES_f)//this calculates the seven point laplacian
 
 /** Spatial Derivative Functions **/
 /*
- The following fucntions are used to calculate the gradient energy of the field only; but they can also be implemented if derivative couplings are desired*/
+ The following functions are used to calculate the gradient energy of the field only; but they can also be implemented if derivative couplings are desired*/
 
 //If you know which partial derivative you need
 
@@ -81,7 +81,7 @@ gNum dfdk_s(gNum f[], INDECIES_f)// spatial derivative of the field f in k (z) d
     return sign(k-N/2)*(f[INDEX(s,fld,i,j,k)]-f[INDEX(s,fld,i,j,k-sign(k-N/2))])/dx;
 }
 
-//If you want to loop over spatial derivatives this form is somewhat more convienent
+//If you want to loop over spatial derivatives this form is somewhat more convenient
 gNum dfdx(gNum f[], int x, INDECIES_f)//spatial derivative of the field f in the "x" direction.
 {
     switch (x)
@@ -112,7 +112,7 @@ gNum dfdkk(gNum f[], INDECIES_f)
     return (-2.*f[INDEX(s,fld,i,j,k)] +f[INDEX(s,fld,i,j,incr(k))] +f[INDEX(s,fld,i,j,decr(k))])/(dx*dx);
 }
 
-/** Mixed Partial Spatial Derviatives **/
+/** Mixed Partial Spatial Derivatives **/
 /*
  The following functions will be used in the equations of motion of the Galileon (or anywhere else if one would need them) */
 
@@ -144,14 +144,14 @@ gNum dfdr_bound(gNum f[], INDECIES_f)
     return (abs(i-N/2.)*(f[INDEX(s,fld,i,j,k)]-f[INDEX(s,fld,i-sign(i-N/2),j,k)])
             +abs(j-N/2.)*(f[INDEX(s,fld,i,j,k)]-f[INDEX(s,fld,i,j-sign(j-N/2),k)])
             +abs(k-N/2.)*(f[INDEX(s,fld,i,j,k)]-f[INDEX(s,fld,i,j,k-sign(k-N/2))]))
-    /dx/sqrt(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.));//normal onesided derivative
+    /dx/sqrt(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.));//normal one-sided derivative
 }//discrete derivative problems?
 
 gNum dfdr_analytic(INDECIES_f, gNum tin){
     
     gNum r2=dx*dx*(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.));
     
-    return 1./(4*sqrt(r2)*kappa)*(-3.*r2+sqrt(32.*pw2(rstar)*rstar*profile(tin)*sqrt(r2)/M_PI+9.*pw2(r2)));//profile is because rs\propto m which is tanhed.
+    return 1./(4*sqrtl(r2)*kappa)*(-3.*r2+sqrtl(32.*pw2(rstar)*rstar*profile(tin)*sqrtl(r2)/M_PI+9.*pw2(r2)));//profile is because rs\propto m which is tanhed.
 }
 
 gNum dfdr_pert(gNum f[], INDECIES_f, gNum tin)//need to double check the form of this with the new solution
@@ -163,7 +163,7 @@ gNum dfdr_pert(gNum f[], INDECIES_f, gNum tin)//need to double check the form of
 
 gNum dfdr_bulk(gNum f[], INDECIES_f)
 {
-    return ((i-N/2.)*dfdi(f,s,fld,i,j,k)+ (j-N/2.)*dfdj(f,s,fld,i,j,k)+ (k-N/2.)*dfdk(f,s,fld,i,j,k))/sqrt(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.));
+    return ((i-N/2.)*dfdi(f,s,fld,i,j,k)+ (j-N/2.)*dfdj(f,s,fld,i,j,k)+ (k-N/2.)*dfdk(f,s,fld,i,j,k))/sqrtl(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.));
 }
 
 gNum dfdr(gNum f[], INDECIES_f)
@@ -186,7 +186,7 @@ gIdx sign(gIdx x)
 
 gNum gradF2(gNum f[], INDECIES_f){
     
-    return  dfdi(f,s,fld,i,j,k)*dfdi(f,s,fld,i,j,k)+dfdj(f,s,fld,i,j,k)*dfdj(f,s,fld,i,j,k)+dfdk(f,s,fld,i,j,k)*dfdk(f,s,fld,i,j,k);//this is the unscaled gradient fo the field at the point i,j,k
+    return  dfdi(f,s,fld,i,j,k)*dfdi(f,s,fld,i,j,k)+dfdj(f,s,fld,i,j,k)*dfdj(f,s,fld,i,j,k)+dfdk(f,s,fld,i,j,k)*dfdk(f,s,fld,i,j,k);//this is the unscaled gradient of the field at the point i,j,k
     
 }
 
@@ -201,7 +201,7 @@ gNum avgGrad(gIdx s) //Find the average gradient energy
             grad+=gradF2(field,INDECIES);//sums the gradient energy at each point
         }
     }
-    return grad/gridsize/2./a[s]/a[s];//divides by the gridsize (to normalize) and 1/(2a^2) to get the gradient energy density
+    return grad/gridsize/2./a[s]/a[s];//divides by the grid-size (to normalize) and 1/(2a^2) to get the gradient energy density
 }
 
 
@@ -242,7 +242,7 @@ void calcEnergy(gIdx s) //Calculate the total energy
     edrho[s]=edkin[s]+edpot[s]+edgrad[s];
 }
 
-gNum adf(gIdx s)//the friedman equation
+gNum adf(gIdx s)//the Friedman equation
 {
     return 0;//return sqrt(8.*M_PI*grav/3.*edrho[s])*a[s];
 }
@@ -251,7 +251,7 @@ gNum adf(gIdx s)//the friedman equation
 
 gNum ddfield(INDECIES_f,gNum tin)//evaluates the double time derivative of the field fld (s) at i,j,k.
 {
-      return galileon2(s,fld,i,j,k,tin);
+      return galileon3(s,fld,i,j,k,tin);
 }
 
 
@@ -265,7 +265,7 @@ void step()//this steps (integrates) the field and it time derivative via the rk
     
     gNum tin=t;
 #if expansion_type==0
-    //no expansion note that this only caclulates the energies at the end of the full step
+    //no expansion note that this only calculates the energies at the end of the full step
     
     for(fld=0;fld<nflds;fld++)//the first part of the RK2 step
     {
@@ -303,7 +303,7 @@ void step()//this steps (integrates) the field and it time derivative via the rk
     {
         //paralleleizes over the index i
 #pragma omp parallel for private (j,k) num_threads (tot_num_thrds)
-        LOOP//This returns the actuall value of the field and derivative at t
+        LOOP//This returns the actual value of the field and derivative at t
         {
             field[INDEX(0,fld,i,j,k)]=field[INDEX(0,fld,i,j,k)]+dt*dfield[INDEX(1,fld,i,j,k)];
             dfield[INDEX(0,fld,i,j,k)]=dfield[INDEX(0,fld,i,j,k)]+dt*ddfield(1,fld,i,j,k,tin);
@@ -352,14 +352,14 @@ void step()//this steps (integrates) the field and it time derivative via the rk
     for(fld=0;fld<nflds;fld++)//second step of the Rk2 integration
     {
 #pragma omp parallel for private (j,k) num_threads (tot_num_thrds)
-        LOOP//This returns the actuall value of the field and derivative at t
+        LOOP//This returns the actual value of the field and derivative at t
         {
             field[INDEX(0,fld,i,j,k)]=field[INDEX(0,fld,i,j,k)]+dt*dfield[INDEX(1,fld,i,j,k)];
             dfield[INDEX(0,fld,i,j,k)]=dfield[INDEX(0,fld,i,j,k)]+dt*ddfield(1,fld,i,j,k);
         }
     }
     
-    a[0]=a[0]+dt*adot[1];//this calclates the full step scale factor
+    a[0]=a[0]+dt*adot[1];//this calculates the full step scale factor
     calcEnergy(0);//calculates the energy at the full step
     adot[0]=adf(0);//then calculates adot based off of the full step
     
@@ -386,14 +386,14 @@ void step()//this steps (integrates) the field and it time derivative via the rk
     for(fld=0;fld<nflds;fld++)//second step of the Rk2 integration
     {
 #pragma omp parallel for private (j,k) num_threads (tot_num_thrds)
-        LOOP//This returns the actuall value of the field and derivative at t
+        LOOP//This returns the actual value of the field and derivative at t
         {
             field[INDEX(0,fld,i,j,k)]=field[INDEX(0,fld,i,j,k)]+dt*dfield[INDEX(1,fld,i,j,k)];
             dfield[INDEX(0,fld,i,j,k)]=dfield[INDEX(0,fld,i,j,k)]+dt*ddfield(1,fld,i,j,k);
         }
     }
     /* this may need to change based off of user defined expansion*/
-    a[0]=a[0]+dt*adot[1];//this calclates the full step scale factor
+    a[0]=a[0]+dt*adot[1];//this calculates the full step scale factor
     calcEnergy(0);//calculates the energy at the full step
     adot[0]=adf(0);//then calculates adot based off of the full step
 #endif

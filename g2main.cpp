@@ -17,14 +17,14 @@
 /*********************
  GABE Header
  *********************/
- //contains all the parameters, changable and unchangeable
-#include "g2header.h" //contains declerations for program functions and parameters file
+ //contains all the parameters, changeable and unchangeable
+#include "g2header.h" //contains decelerations for program functions and parameters file
 
 
 gNum t=starttime;//this is the variable that stores the time
 gNum field[int_order*N*N*N*nflds];//this stores the field values for each step along the grid
 gNum dfield[int_order*N*N*N*nflds];//this stores the derivative of the field for each step along the grid
-gNum a[int_order];//this stores the scale facator for each step
+gNum a[int_order];//this stores the scale factor for each step
 gNum adot[int_order];// this stores the time derivative of the scale factor
 gNum edpot[int_order]; //this stores the average potential energy
 gNum edkin[int_order]; //this stores the average kinetic energy
@@ -43,10 +43,10 @@ int main()
     printf("Info file made.\n");
  /*
     field=(gNum(*)[nflds][N][N][N]) malloc(sizeof(gNum)*nflds*2*N*N*N);//allocates memory for the fields
-    printf("'field' memory allocated\n");
+    printf("'field' memory allocated");
     
     dfield=(gNum(*)[nflds][N][N][N]) malloc(sizeof(gNum)*nflds*2*N*N*N);//allocates memory for the fields' time derivatives
-    printf("'dfield' memory allocated\n");
+    printf("'dfield' memory allocated");
     
     printf("Memory allocated for all arrays\n\n");
   */
@@ -55,32 +55,32 @@ int main()
     
     for(t=starttime;t<=endtime;t+=dt)//This is the main for-loop over time. Note that the current t value is the time for the currently evaluated fields
     {
-		
+        
         if(t==starttime)
         {
             initfields();//Initializes fields as defined in model.h
             printf("Fields initialized (no fluctuations).\n");
             initexpansion();//start expansion;
             printf("No expansion.\n");
-			
+            
             initfields();//do fluctuations
             printf("Model Specific Initialization Completed\n");
 
             printf("Time evolution beginning.....\n");
             
-			screenout();//outputs current pr time to screen (see g2output.cpp)
-			outputslice();//outputs slice values to file
+            screenout();//outputs current pr time to screen (see g2output.cpp)
+            outputslice();//outputs slice values to file
 
         }
 #if int_order==2
-		step();//evolves the fields one step
+        step();//evolves the fields one step
 #elif int_order==4
         steprk4();
 #endif
-		screenout();//outputs current pr time to screen
-		outputslice();//outputs slice values to file
-      //  nancheck();
-	}
+        screenout();//outputs current pr time to screen
+        outputslice();//outputs slice values to file
+        nancheck();
+    }
 #if spec_output==1
     specClear();//clears fftw stuff needed for spectra at the end of the run
 #endif

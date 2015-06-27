@@ -4,10 +4,10 @@
 
 
 /*
- This header file contains contains all the model dependet functions necessary for the program.
+ This header file contains contains all the model dependent functions necessary for the program.
  Note that model dependent parameters should go in g2parameters.h.
  Note that all functions must be in program units which are given by the following rescallings (pr denotes quantity used in program).
- Any other model functions should be added here (and may need to tweek g2function.cpp and g2output.cpp).
+ Any other model functions should be added here (and may need to tweak g2function.cpp and g2output.cpp).
  
  
  B=mphi //Note that B may change depending on your model
@@ -25,7 +25,7 @@
  Last Updated: 06.27.2013
  */
 
-#include "g2header.h" //contains declerations for program functions.
+#include "g2header.h" //contains decelerations for program functions.
 
 // Model specific details about the run to be output to an information file
 //change as needed
@@ -33,13 +33,13 @@ void modelinfo(FILE *info)
 {
     // Name and description of model
     fprintf(info,"Testing GR and Galileons from Binary System.\n");
-    fprintf(info,"Using Hulse-Taylor Binary Pulsar as Base Model\n Model Parametrs\n");
+    fprintf(info,"Using Hulse-Taylor Binary Pulsar as Base Model\n Model Parameters\n");
     
     // Model specific parameter values
     fprintf(info,"sigma2 = %Le",sigma2);
     fprintf(info,"alpha = %Le",alpha);
     fprintf(info,"Omega = %Le\n",omega);
-    fprintf(info,"Gallileon Order = %d", gallileon_order);
+    fprintf(info,"Galileon Order = %d", galileon_order);
     fprintf(info,"Kappa = %Le\n",kappa);
     fprintf(info,"Kappa^2 = %Le\n",kappa2);
     
@@ -68,24 +68,28 @@ gNum potential(INDECIES_f)//user defined potential
     return 0;
 }
 
-gNum profile(gNum r)
+gNum profile(gNum tin)
 {
-    return 0.49330714907571516+0.5*tanh((.1*r -2.5));
+    static const gNum norm=tanh(-2.5);
+    return (tanhl(.1*tin -2.5)-norm)/(1.-norm);
 }
 
 
+gNum radius(gNum tin, gNum tdone, gNum rate){
 
+    return ((tin<tdone) ? (tin*rate)/(2.*M_PI) : 1.);
+}
 
 gNum massGaussian1 (INDECIES_f,gNum tin)
 {
-    return profile(tin)*(PNorm*exp(-1.*(pw2(dx*(i-N/2.)-cos(omega*tin)) + pw2(dx*(j-N/2.)-sin(omega*tin)) + pw2(dx*(k-N/2.)))/(sigma2)));
+    return profile(tin)*(PNorm*expl(-1.*(pw2(dx*(i-N/2.)-cosl(omega*tin)) + pw2(dx*(j-N/2.)-sinl(omega*tin)) + pw2(dx*(k-N/2.)))/(sigma2)));
     
     // the last term is so that the avg value of the source is zero. note that there is something odd with normalization going on. or not....
 }
 
 gNum massGaussian2 (INDECIES_f,gNum tin)
 {
-    return profile(tin)*alpha*PNorm*exp(-1.*(pw2(dx*(i-N/2.)+cos(omega*tin)) + pw2(dx*(j-N/2.)+sin(omega*tin)) + pw2(dx*(k-N/2.)))/(sigma2));
+    return profile(tin)*alpha*PNorm*expl(-1.*(pw2(dx*(i-N/2.)+cos(omega*tin)) + pw2(dx*(j-N/2.)+sinl(omega*tin)) + pw2(dx*(k-N/2.)))/(sigma2));
 }
 
 
@@ -95,7 +99,33 @@ gNum energyDensity(INDECIES_f,gNum tin)
 }
 
 
-gNum galileon2(INDECIES_f,gNum tin)
+gNum galileon3(INDECIES_f,gNum tin)
+{
+    return (energyDensity(INDECIES,tin)*lambda
+        +3.*(
+            dfdjj(PI)
+            +dfdii(PI) 
+            +dfdkk(PI))
+        +2.*kappa*(
+            dfdi(dPI)*dfdi(dPI)
+            +dfdj(dPI)*dfdj(dPI)
+            +dfdk(dPI)*dfdk(dPI)
+            -dfdij(PI)*dfdij(PI)
+            -dfdik(PI)*dfdik(PI)
+            -dfdjk(PI)*dfdjk(PI)
+            +dfdii(PI)*dfdjj(PI)
+            +dfdii(PI)*dfdkk(PI)
+            +dfdjj(PI)*dfdkk(PI))
+    )/(3. 
+        +2.*kappa*(
+            dfdii(PI) 
+            +dfdjj(PI) 
+            +dfdkk(PI))
+    );
+}
+
+
+gNum galileon4(INDECIES_f,gNum tin)
 {
     
     
@@ -105,7 +135,7 @@ gNum galileon2(INDECIES_f,gNum tin)
               +dfdjj(PI)
               +dfdkk(PI)
               )
-#if gallileon_order>=3
+#if galileon_order>=3
             +2.*(
                  dfdi(dPI)*dfdi(dPI)
                  +dfdj(dPI)*dfdj(dPI)
@@ -117,7 +147,7 @@ gNum galileon2(INDECIES_f,gNum tin)
                  +dfdii(PI)*dfdkk(PI)
                  +dfdjj(PI)*dfdkk(PI)
                  )*kappa
-#if gallileon_order>=4 //need to check that it agrees
+#if galileon_order>=4 //need to check that it agrees
             +6.*(
                  dfdi(dPI)*dfdi(dPI)*dfdkk(PI)
                  +dfdi(dPI)*dfdi(dPI)*dfdjj(PI)
@@ -137,14 +167,13 @@ gNum galileon2(INDECIES_f,gNum tin)
 #endif
 #endif
             )/(9.
-#if gallileon_order>=3
-    
-        +2.*(
+#if galileon_order>=3
+            +2.*(
               dfdii(PI)
               +dfdjj(PI)
               +dfdkk(PI)
               )*kappa
-#if gallileon_order>=4 //need to check that it agrees
+#if galileon_order>=4 //need to check that it agrees
        +6.*(
            dfdij(PI)*dfdij(PI)
            +dfdik(PI)*dfdik(PI)
@@ -161,7 +190,7 @@ gNum galileon2(INDECIES_f,gNum tin)
 }
 
 
-inline gNum effMass(INDECIES_f)//the effective mass used for random inital conditions
+inline gNum effMass(INDECIES_f)//the effective mass used for random initial conditions
 {
     return 0.;
 }
@@ -188,13 +217,13 @@ void initfields()//here the user may decide how the fields will be initialized
     {
 #if rand_init==1
         for(fld=0; fld<nflds; fld++){
-            randInit(field[s][fld],dfield[s][fld],effMass(s,fld));//adds random intial conditions ontop of mean value above
+            randInit(field[s][fld],dfield[s][fld],effMass(s,fld));//adds random initial conditions on-top of mean value above
         }
         initDestroy();
         printf("Fields fluctuated\n");
 #endif
         
-        //Any other model specific initialization can go here -- i.e. Bubbles, etc	
+        //Any other model specific initialization can go here -- i.e. Bubbles, etc  
     }
     
     calcEnergy(0); //This is important -- needed for first step of evolution

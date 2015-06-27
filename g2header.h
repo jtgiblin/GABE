@@ -26,10 +26,10 @@
 #define omp_set_nested(x)
 #define omp_get_num_threads() 1
 
-//this is a directive to declare all the common indecies for the fields
+//this is a directive to declare all the common indices for the fields
 #define DECLARE_INDEX gIdx fld,i,j,k;
 
-//Indecies for function delcleartion
+//Indecies for function deceleration
 #define INDECIES_f gIdx s, gIdx fld, gIdx i, gIdx j, gIdx k
 
 //indecies for function call
@@ -43,16 +43,16 @@ typedef long int gIdx;//index type
 /******************************
  Global Preprocessor Directives
  ******************************/
-//the following are definitions for looping over different field indicies
+//the following are definitions for looping over different field indices
 
 #define fldLOOP for(fld=0;fld<nflds;fld++) for(i=0;i<N;i++) for(j=0;j<N;j++) for(k=0;k<N;k++)
-//this loops over the fld and all three indicies
+//this loops over the fld and all three indices
 
 #define LOOP for(i=0;i<N;i++) for(j=0;j<N;j++) for(k=0;k<N;k++)
-//this loops over just the indicies (3D)
+//this loops over just the indices (3D)
 
 #define LOOP2 for(j=0;j<N;j++) for(k=0;k<N;k++)
-//this loops over just the j and k indicies (2D)
+//this loops over just the j and k indices (2D)
 
 #define INDEX(s,fld,i,j,k) N*(N*(N*(nflds*s+fld)+i)+j)+k//index function to make array format easier to adjust
 
@@ -70,7 +70,7 @@ extern gNum field[int_order*N*N*N*nflds];//this stores the field values for each
 extern gNum dfield[int_order*N*N*N*nflds];//this stores the derivative of the field for each step along the grid
 
 //The following are all arrays of length two, one for each step of the RK2 integration
-extern gNum a[int_order];//this stores the scale facator for each step
+extern gNum a[int_order];//this stores the scale factor for each step
 extern gNum adot[int_order];// this stores the time derivative of the scale factor
 extern gNum edpot[int_order]; //this stores the average potential energy
 extern gNum edkin[int_order]; //this stores the average kinetic energy
@@ -85,34 +85,38 @@ extern gNum edrho[int_order]; // this stores the avg. energy density over the bo
 //These are the declerations of the initialization functions whose definitions are found in g2init.cpp
 
 
-void initexpansion();// initializes all of the energy densities and scale factor as appropriet for the begining of the run
+void initexpansion();// initializes all of the energy densities and scale factor as appropriate for the beginning of the run
 
-void dftMemAlloc();// Allocates the memory for the dft for moving the random intialization in momentum space to configuration space
+void dftMemAlloc();// Allocates the memory for the dft for moving the random initialization in momentum space to configuration space
 
 void randInit( gNum f[],gNum df[],gNum d2vdf2);//function which initializes the random conditions for fields f and df
 
-void initDestroy();//destroys the fftw extra stuffs needed only durring intialization
+void initDestroy();//destroys the fftw extra stuffs needed only during initialization
 
 
 /************
  Model Header
  ************/
-//These are the declerations of the functions defined in g2model.cpp
+//These are the decelerations of the functions defined in g2model.cpp
 
 
 void modelinfo(FILE *info);//function which prints model dependent information to info.txt
 
 gNum potential(INDECIES_f);// function to evaluate the potential of the field(s)
 
-gNum profile(gNum r); //function to set how the initial energ density grows
+gNum profile(gNum tin); //function to set how the initial energy density grows
 
-gNum massGaussian1 (INDECIES_f,gNum tin);//the mass gaussian for one of the stars
+gNum radius(gNum tin, gNum tdone, gNum rate); //function to set what the radius of the orbit is.
 
-gNum massGaussian2 (INDECIES_f,gNum tin);//the mass gaussian for the other star
+gNum massGaussian1 (INDECIES_f,gNum tin);//the mass Gaussian for one of the stars
+
+gNum massGaussian2 (INDECIES_f,gNum tin);//the mass Gaussian for the other star
 
 gNum energyDensity(INDECIES_f,gNum tin); //function defining the energy density of the source.
 
-gNum galileon2(INDECIES_f,gNum tin); // function to numerically calculate pi-double-dot for the galileon
+gNum galileon3(INDECIES_f,gNum tin); // function to numerically calculate pi-double-dot for the cubic Galileon
+
+gNum galileon4(INDECIES_f,gNum tin); // function to numerically calculate pi-double-dot for the quartic Galileon
 
 inline gNum effMass(INDECIES_f);// function holds the effective mass of the fields, returns 1. if none is stored.
 
@@ -123,13 +127,13 @@ void initfields();//function to initialize the fields (and anything else)
  Functions Header
  ************/
 
-// There are the declerations of the functions defined in g2functions.cpp
+// There are the decelerations of the functions defined in g2functions.cpp
 
 gNum pw2(gNum x);//This function squares doubles
 
-gIdx incr(gIdx i);///for incremiting with periodic boundary conditions
+gIdx incr(gIdx i);///for incrementing with periodic boundary conditions
 
-gIdx decr(gIdx i);//for decremiting with periodic boundary conditions
+gIdx decr(gIdx i);//for decrementing with periodic boundary conditions
 
 gNum laplacian(gNum f[], INDECIES_f);//this is the function to call for the 7pt laplacian
 
@@ -151,7 +155,7 @@ gNum dfdii(gNum f[], INDECIES_f); //double spatial derivative in x or i directio
 
 gNum dfdjj(gNum f[], INDECIES_f); // double spatial derivative in y or j direction.
 
-gNum dfdkk(gNum f[], INDECIES_f); // double spatial derivatve in z or k direction.
+gNum dfdkk(gNum f[], INDECIES_f); // double spatial derivative in z or k direction.
 
 gNum dfdij (gNum f[], INDECIES_f); //mixed partial wrt x and y (i and j).
 
@@ -177,13 +181,13 @@ gNum avgGrad(gIdx s);//calculates the average gradient energy over the box
 
 gNum avgPot(gIdx s);//calculates the average potential energy over the box
 
-gNum avgKin(gIdx s);// calculates the avereage kinetic energy over the box
+gNum avgKin(gIdx s);// calculates the average kinetic energy over the box
 
 void calcEnergy(gIdx s);// calculates the total average energy  over the box
 
 gNum adf(gIdx s);// calculates adot from the average energy density
 
-gNum ddfield(INDECIES_f,gNum tin);//equation of motion for the fields (klein gordon)
+gNum ddfield(INDECIES_f,gNum tin);//equation of motion for the fields (Klein-Gordon)
 
 void step();//performs the full RK2 integration
 
@@ -192,7 +196,7 @@ void steprk4();// performs the full RK4 integration
 /**************
  Output Header
  *************/
-//Decleartion for all output functions found in g2output.cpp
+//Declaration for all output functions found in g2output.cpp
 
 gNum pi_powerout(gNum *bkgf);//Calculates the power of pi at the sides of he box.
 
@@ -200,7 +204,7 @@ void outputfield(int first);//outputs the field values over box (dimension and s
 
 void screenout();//determines when there should be screen output
 
-//gNum ENERGYDENISTY(int i, int j, int k);//calculates the energy denisty at each grid poiny
+//gNum ENERGYDENISTY(int i, int j, int k);//calculates the energy density at each grid point
 
 void meansvars(); //outputs means and variances of all fields
 
@@ -212,13 +216,13 @@ void output_parameters();//this creates the info.txt and populates it
 
 void nancheck(); //this checks field[index] for nan.
 
-void readable_time(int tt, FILE *info);//prints meanigful time to the info.txt
+void readable_time(int tt, FILE *info);//prints meaningful time to the info.txt
 
 
 /**************
  Spectra Header
  **************/
-//Decleration for all functions found in g2spectra.cpp
+//Deceleration for all functions found in g2spectra.cpp
 void specOut(int first);//the calculates and prints to file the spectra of the fields
 
 void specClear();//clears memory from the dft's used in specOut

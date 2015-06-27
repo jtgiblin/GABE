@@ -10,10 +10,10 @@
  date (mm.dd.yyyy): 08.10.2012
  */
 
-#include "g2header.h" //contains declerations for program functions.
+#include "g2header.h" //contains decelerations for program functions.
 
 /*************IMPORTANT NOTE*************/
-//not currently generalized to use the typedef gNum due to fftw having different protocals for double long double etc.
+//not currently generalized to use the typedef gNum due to fftw having different protocols for double long double etc.
 
 /** expansion initialization **/
 void initexpansion()
@@ -90,7 +90,7 @@ void randInit(long double f[][N][N],long double df[][N][N],long double d2vdf2)
         srand(randseed);
     }
     
-    /* first we calculate phi(0, x) and phidot(0, x)	*/
+    /* first we calculate phi(0, x) and phidot(0, x)    */
 #pragma omp parallel for private (j,k,i2,j2,k2,tester,wk,randVar,randAngle, fkRI1,fkRI2) num_threads (tot_num_thrds)
     for(i=0; i<N; i++){
         i2 = (i<(N/2+1) ? (i*i) : ((N-i)*(N-i)));

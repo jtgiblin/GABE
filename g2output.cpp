@@ -3,7 +3,7 @@
  ****************************/
 
 /*
- This header file contains all the functions for the output of the data. Note that the outputslice() function needs to be generalized for n-fields and right now only gives meaning full output for 1 field. The only information outputed is the value of the field for the slice, the times atwhich the slices were output and the info.dat file.
+ This header file contains all the functions for the output of the data. Note that the outputslice() function needs to be generalized for n-fields and right now only gives meaning full output for 1 field. The only information outputted is the value of the field for the slice, the times at which the slices were output and the info.dat file.
  
  Copyright (2013):
  Kenyon College
@@ -12,7 +12,7 @@
  Last Updated: 06.27.2013
  */
 
-#include "g2header.h" //contains declerations for program functions.
+#include "g2header.h" //contains decelerations for program functions.
 gNum gravrho1=0.;  // this stores the energy of the gravitational waves
 gNum gravrho2=0.;
 
@@ -33,11 +33,11 @@ gNum pi_powerout(gNum *bkgf){
     for (gIdx i=0; i<N; i++) {
         for (gIdx j=0; j<N; j++) {
             
-            mbkg0=profile(t)*(-N/2.)/sqrt(pw2(i-N/2.)+pw2(j-N/2.)+pw2(-N/2.))*dfdr_analytic(0,0,i,j,0,t);
+            mbkg0=profile(t)*(-N/2.)/sqrtl(pw2(i-N/2.)+pw2(j-N/2.)+pw2(-N/2.))*dfdr_analytic(0,0,i,j,0,t);
             
             //1./pw2(4*M_PI*dx*dx*(pw2(i-N/2.)+pw2(j-N/2.)+pw2(-N/2.)));
             
-            mbkgN=profile(t)*(N/2.-1.)/sqrt(pw2(i-N/2.)+pw2(j-N/2.)+pw2(N/2.-1.))*dfdr_analytic(0,0,i,j,N-1,t);
+            mbkgN=profile(t)*(N/2.-1.)/sqrtl(pw2(i-N/2.)+pw2(j-N/2.)+pw2(N/2.-1.))*dfdr_analytic(0,0,i,j,N-1,t);
             //1./pw2(4*M_PI*dx*dx*(pw2(i-N/2.)+pw2(j-N/2.)+pw2(N/2.-1.)));
             
             *bkgf+=(mbkgN)*dfield[INDEX(0, nflds-1,N-1,i,j)];
@@ -99,7 +99,7 @@ void outputfield(int first)//outputs the field values
     sprintf(sourcename, "./source/slices_source_%d.dat", first);
     sourceslice = fopen(sourcename, "w");
     
-#if field_outdim==3//outputs slice for 3dimensions
+#if field_outdim==3//outputs slice for 3 dimensions
     fld=0;
     for(i=1;i<N-1;i+=field_sliceskip){
         for(j=1;j<N-1;j+=field_sliceskip){
@@ -107,10 +107,10 @@ void outputfield(int first)//outputs the field values
                 fprintf(slicefield,"%Le ", field[INDEX(0,fld,i,j,k)]);
                 fprintf(sourceslice,"%Le ", dfield[INDEX(0, fld, i, j, k)]);
                 //fprintf(sourceslice,"%Le ", energyDensity(0,fld,i,j,k,t));
-                fprintf(energyslice,"%Le ", dfield[INDEX(0,fld,i,j,k)]*dfield[INDEX(0,fld,i,j,k)]+gradF2(field,0,fld,i,j,k));
+                fprintf(energyslice,"%Le ", energyDensity(0,fld,i,j,k,t));
             }
             fprintf(slicefield,"\n");
-            //fprintf(sourceslice,"\n");
+            fprintf(sourceslice,"\n");
             fprintf(energyslice,"\n");
         }
         fprintf(slicefield,"\n");
@@ -216,8 +216,8 @@ void outputfield(int first)//outputs the field values
     }
     
 #endif
-    //fclose(slicefield);
-     fclose(energyslice);
+    fclose(slicefield);
+    fclose(energyslice);
      //fclose(gravrhoslice);
     fclose(sourceslice);
 }
@@ -265,13 +265,13 @@ void meansvars()//calculates the mean and variance of each field
 
 int slicewaitf()
 {
-    return (int) (endtime/dt/slicenumber);//calculates number of timesteps to wait for slicenumber slices by time endtime
+    return (int) (endtime/dt/slicenumber);//calculates number of time-steps to wait for slicenumber slices by time endtime
 }
 
 
 
 
-void outputslice()//externally called function for outputing the data from the run
+void outputslice()//externally called function for outputting the data from the run
 {
     static FILE  *slicetime;
     static int first=0;
@@ -315,7 +315,7 @@ void outputslice()//externally called function for outputing the data from the r
         
         
         /*times file output */
-        //this routine outputs time, scalefactor, scalfactor derivative, hubble constant, and energy componets at each slice output
+        //this routine outputs time, scale-factor, scale-factor derivative, Hubble constant, and energy components at each slice output
         slicetime=fopen("./slices/slices_time.dat","a");
         //slicetime=fopen("slices_time.dat","a");
         gNum bkgf, piPow;
@@ -338,7 +338,7 @@ void outputslice()//externally called function for outputing the data from the r
 
 
 
-void output_parameters()//this creats info.dat which contains information about run parameters and statistics
+void output_parameters()//this creates info.dat which contains information about run parameters and statistics
 {
     static FILE *info;
     
@@ -397,7 +397,8 @@ void nancheck()
     DECLARE_INDEX
     
     fldLOOP
-    av+=field[INDEX(0,0,i,j,k)];
+        av+=field[INDEX(0,0,i,j,k)];
+    
     if((av!=0. && av/av!=1.)) // These two separate checks between them work on all the compilers I've tested
     {
         printf("Unstable solution developed. Field %d not numerical at t=%Le\n",fld,t);
@@ -450,7 +451,7 @@ void readable_time(int tt, FILE *info)
 
 
 
-void screenout()//this calculates the time ellapsed from last screen output before outputting current program time.
+void screenout()//this calculates the time elapsed from last screen output before outputting current program time.
 {
     
     time(&tCurrent);

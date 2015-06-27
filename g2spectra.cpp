@@ -12,16 +12,16 @@
  Last Updated: 06.27.2013
 */
 
-#include "g2header.h" //contains declerations for program functions.
+#include "g2header.h" //contains decelerations for program functions.
 
 /*************IMPORTANT NOTE*************/
-//not currently generalized to use the typedef gNum due to fftw having different protocals for double long double etc.
+//not currently generalized to use the typedef gNum due to fftw having different protocols for double long double etc.
 
 #if spec_output==1
 
-static long double *indft; //decleares input field for dft
-static fftwl_complex *outdft; //decleares output field for dft
-static fftwl_plan spec_plan; //decleares dft plan for fftw
+static long double *indft; //declares input field for dft
+static fftwl_complex *outdft; //declares output field for dft
+static fftwl_plan spec_plan; //declares dft plan for fftw
 
 void specOut(int first)
 {
@@ -60,8 +60,8 @@ void specOut(int first)
         for(i=0;i<N;i++) {//this is the loop over momentum space
             px=(i<=N/2 ? i: i-N);//calculates the real momentum space position for the x direction
             for(j=0; j<N;j++) {
-                py = (j<=N/2 ? j : j-N); //calculates the real momentum space position for the y direection
-                for(k=1;k<N/2;k++) { //since the k=0 and k=n/2+1 are un matched we treat the seperately
+                py = (j<=N/2 ? j : j-N); //calculates the real momentum space position for the y direction
+                for(k=1;k<N/2;k++) { //since the k=0 and k=n/2+1 are unmatched we treat the separately
                     pz=k;//calculates the real momentum space position for the z direction
                     pmagnitude = sqrt(pw2(px)+pw2(py)+pw2(pz));//calculates the magnitude of the momentum of the point
                     spec_power[fld][(int) pmagnitude]+=2.*(pw2(outdft[k + (N/2+1)*(j + N*i)][0])+pw2(outdft[k + (N/2+1)*(j + N*i)][1])); //adds the power in this mode to the proper bin times two 
@@ -89,8 +89,8 @@ void specOut(int first)
             else
                 spec_power[fld][i]=0.;
         }
-		
-	}
+        
+    }
     
     
     //Print the spectra to a file
