@@ -39,7 +39,7 @@ const gNum lambda = 8.*sqrtl(M_PI*omega/(1.+alpha));
 #define parallelize 1// for parallelization set to 1 and set other variables set to 0 for no parallelization
 #define tot_num_thrds 8//total (max) number of threads to run during program
 const int randseed=44463132;//seed for rand number generator
-const gIdx N=128;//number of points along one side of grid
+const gIdx N=300;//number of points along one side of grid
 const gNum L=25.;// length of one side of box in prgm units
 const gNum starttime=0.;//start time of simulation
 const gNum endtime=100.;//end time of simulations
@@ -73,7 +73,7 @@ const int specnumber=1; //how many spectra to out put (1= every output slice 2 e
 #define slice_orient 0// 0 for xy-slice; 1 for yz-slice; 2 for xz-slice
 #define pi_powerout 0
 #define nan_check 0//1 to have ind nan-check
-#define NSPHERE 48770//Number of points on the power sphere
+//#define NSPHERE 48770//Number of points on the power sphere
 #define pow_output 1//1 to output spherical power
 /*********************************
  These are important DO NOT CHANGE

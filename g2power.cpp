@@ -9,7 +9,22 @@ void deIndex(gIdx num, gIdx *i, gIdx *j, gIdx *k)
 	*k=(num%(N*N))%N;
 }
 
-void makeSphere(gNum sphere[]){
+gIdx countSphere(){
+	gIdx count=0;
+	gIdx i,j,k;
+	
+	LOOP{
+		if(
+			(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)<(N/2-1)*(N/2-1)
+			&&(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)>=(N/2-2)*(N/2-2)
+			){
+			count++;
+		}
+	}
+	return count;
+}
+
+void makeSphere(gNum sphere[], gIdx nSphere){
 	gIdx count=0;
 	gIdx i,j,k;
 	
@@ -22,14 +37,9 @@ void makeSphere(gNum sphere[]){
 			count++;
 		}
 	}
-	if(count!=NSPHERE){
-		printf("Size of sphere (%d) does not match needed size of %d. Please recalculate!");
-		output_parameters();
-        exit(1);
-	}
 }
 
-gNum rSphY(int lmIdx, gNum cp, gNum sp, gNum ct, gNum st){
+gNum rSphY(gIdx lmIdx, gNum cp, gNum sp, gNum ct, gNum st){
 	switch(lmIdx)
 	{
 		//l=0
@@ -86,7 +96,7 @@ gNum rSphY(int lmIdx, gNum cp, gNum sp, gNum ct, gNum st){
 			break;
 	}
 }
-gNum cSphY(int lmIdx, gNum cp, gNum sp, gNum ct, gNum st){
+gNum cSphY(gIdx lmIdx, gNum cp, gNum sp, gNum ct, gNum st){
 	switch(lmIdx)
 	{
 		//l=0
@@ -149,17 +159,16 @@ void modePowerOut(gNum tin, int first){
 	gNum x,y,z,rPi,tPi;
 	gNum cp,sp,ct,st,totPow;
 	//the size of these are 16 to cary upto octopole terms
-	static gNum sphere[NSPHERE];//this stores the index of the points along our sphere
+	static const gIdx nSphere=countSphere();
 	gNum almc[16]={0.};
 	gNum almr[16]={0.};
 	gNum blmc[16]={0.};
 	gNum blmr[16]={0.};
-	static const gNum dOmega=4.*M_PI*(N/2.-.5)*(N/2.-.5)/(double)NSPHERE;
-	if(first==0) {
-		makeSphere(sphere);
-	}
+	gNum sphere[nSphere];//this stores the index of the points along our sphere
+	makeSphere(sphere,nSphere);
+	static const gNum dOmega=4.*M_PI*(N/2.-.5)*(N/2.-.5)/(double)nSphere;
 	totPow=0.;
-	for(idx=0;idx<NSPHERE;idx++){
+	for(idx=0;idx<nSphere;idx++){
 		deIndex(sphere[idx],&i,&j,&k);
 		rPi=dfdr(field,0,0,i,j,k)- dfdr_analytic(0,0,i,j,k,tin);
 		tPi=dfield[INDEX(0,0,i,j,k)];
@@ -176,8 +185,8 @@ void modePowerOut(gNum tin, int first){
 		}
 		ct=z/sqrtl((x*x)+(y*y)+(z*z));
 		st=sqrtl((x*x)+(y*y))/sqrtl((x*x)+(y*y)+(z*z));
-		for(int l=0;l<4;l++){
-			for(int m=-l;m<=l;m++) {
+		for(gIdx l=0;l<4;l++){
+			for(gIdx m=-l;m<=l;m++) {
 				almc[lmINDEX(l,m)]+=rPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
 				almr[lmINDEX(l,m)]+=rPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
 				blmc[lmINDEX(l,m)]+=tPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
@@ -198,10 +207,10 @@ void modePowerOut(gNum tin, int first){
         exit(1);
     }
 
-    fprintf(powerout, "%Le %Le %Le %Le %Le, ",tin, profile(t), totPow/dOmega, (piPow-bkgf)/dx/dx);
-	for(int l=0;l<4;l++){
-		for(int m=-l;m<=l;m++) {
-		fprintf(powerout, "%Le %Le %Le %Le, ",almc[lmINDEX(l,m)]/dOmega,almr[lmINDEX(l,m)]/dOmega,blmc[lmINDEX(l,m)]/dOmega,blmr[lmINDEX(l,m)]/dOmega);
+    fprintf(powerout, "%Le %Le %Le %Le %Le ",tin, profile(t), totPow/dOmega, (piPow-bkgf)/dx/dx);
+	for(gIdx l=0;l<4;l++){
+		for(gIdx m=-l;m<=l;m++) {
+		fprintf(powerout, "%Le %Le %Le %Le ",almc[lmINDEX(l,m)]/dOmega,almr[lmINDEX(l,m)]/dOmega,blmc[lmINDEX(l,m)]/dOmega,blmr[lmINDEX(l,m)]/dOmega);
 		}
 	}
 	fprintf(powerout, "\n");

@@ -234,10 +234,12 @@ void specClear();//clears memory from the dft's used in specOut
 
 void deIndex(gIdx num, gIdx *i, gIdx *j, gIdx *k);// Calculates the ijk position from an index num
 
-void makeSphere(gNum sphere[]);// Calculates the index for the points on a sphere
+gIdx countSphere();// counts how many points in the sphere.
 
-gNum rSphY(int lmIdx, gNum cp, gNum sp, gNum ct, gNum st); // Calculates the real part of the spherical harmonic
+void makeSphere(gNum sphere[],gIdx nSphere);// Calculates the index for the points on a sphere
 
-gNum cSphY(int lmIdx, gNum cp, gNum sp, gNum ct, gNum st); // Calculates the imaginary part the spherical harmonic
+gNum rSphY(gIdx lmIdx, gNum cp, gNum sp, gNum ct, gNum st); // Calculates the real part of the spherical harmonic
+
+gNum cSphY(gIdx lmIdx, gNum cp, gNum sp, gNum ct, gNum st); // Calculates the imaginary part the spherical harmonic
 
 void modePowerOut(gNum tin, int first);// calculates and outputs the coefficients for the power per mode
