@@ -89,8 +89,8 @@ void specOut(int first)
             else
                 spec_power[fld][i]=0.;
         }
-        
-    }
+		
+	}
     
     
     //Print the spectra to a file

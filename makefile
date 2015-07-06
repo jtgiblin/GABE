@@ -2,14 +2,14 @@
 COMPILER = /usr/local/bin/g++-4.9 #Because XCode is Lame
 OFLAG = -O3
 FLAGS = -m64 -g -fopenmp $(OFLAG)
-LINKS = -lfftw3l_threads -lfftw3l  # -L/opt/local/lib -lfftw3l_omp
+LINKS = -lfftw3l_threads -lfftw3l #-L/opt/local/lib -lfftw3l_omp
 
 do: fclean dirmake oclean compile 
 
 xcmake : do
 	
-compile: g2header.h g2parameters.h g2model.o g2functions.o g2spectra.o g2output.o g2main.o g2init.o 
-	$(COMPILER) $(FLAGS) g2model.o g2functions.o g2spectra.o g2output.o g2init.o g2main.o $(LINKS) -o gabe
+compile: g2header.h g2parameters.h g2model.o g2functions.o g2spectra.o g2power.o g2output.o g2main.o g2init.o 
+	$(COMPILER) $(FLAGS) g2model.o g2functions.o g2spectra.o g2power.o g2output.o g2init.o g2main.o $(LINKS) -o gabe
 
 clean : fclean oclean
 
@@ -18,6 +18,9 @@ g2main.o: g2header.h g2parameters.h g2main.cpp
 
 g2spectra.o: g2header.h g2parameters.h g2spectra.cpp
 	$(COMPILER) -c $(FLAGS)  g2spectra.cpp
+
+g2power.o: g2header.h g2parameters.h g2power.cpp
+	$(COMPILER) -c $(FLAGS)  g2power.cpp
 
 g2model.o: g2header.h g2parameters.h g2model.cpp
 	$(COMPILER) -c $(FLAGS)  g2model.cpp

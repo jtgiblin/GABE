@@ -198,7 +198,7 @@ void steprk4();// performs the full RK4 integration
  *************/
 //Declaration for all output functions found in g2output.cpp
 
-gNum pi_powerout(gNum *bkgf);//Calculates the power of pi at the sides of he box.
+gNum piPowerOut(gNum *bkgf);//Calculates the power of pi at the sides of he box.
 
 void outputfield(int first);//outputs the field values over box (dimension and sampling determined in g2parameters.h
 
@@ -227,3 +227,17 @@ void specOut(int first);//the calculates and prints to file the spectra of the f
 
 void specClear();//clears memory from the dft's used in specOut
 
+
+/**************
+ Power Header
+ **************/
+
+void deIndex(gIdx num, gIdx *i, gIdx *j, gIdx *k);// Calculates the ijk position from an index num
+
+void makeSphere(gNum sphere[]);// Calculates the index for the points on a sphere
+
+gNum rSphY(int lmIdx, gNum cp, gNum sp, gNum ct, gNum st); // Calculates the real part of the spherical harmonic
+
+gNum cSphY(int lmIdx, gNum cp, gNum sp, gNum ct, gNum st); // Calculates the imaginary part the spherical harmonic
+
+void modePowerOut(gNum tin, int first);// calculates and outputs the coefficients for the power per mode

@@ -27,7 +27,7 @@ time_t tStart,tCurrent,tLast,tFinish; // Keep track of elapsed clock time
  output stuffs
  *****************/
 
-gNum pi_powerout(gNum *bkgf){
+gNum piPowerOut(gNum *bkgf){
     *bkgf=0;
     gNum mbkg0=0, mbkgN=0, flux=0;
     for (gIdx i=0; i<N; i++) {
@@ -311,15 +311,18 @@ void outputslice()//externally called function for outputting the data from the 
 #if var_output!=0
         //meansvars();//outputs mean and variance of fields
 #endif
-        
-        
+
+#if pow_output!=0
+        modePowerOut(t,first);
+#endif     
         
         /*times file output */
         //this routine outputs time, scale-factor, scale-factor derivative, Hubble constant, and energy components at each slice output
         slicetime=fopen("./slices/slices_time.dat","a");
-        //slicetime=fopen("slices_time.dat","a");
+        fprintf(slicetime,"%Lf %Le\n", t, profile(t));
+#if pi_powerout!=0
         gNum bkgf, piPow;
-        piPow=pi_powerout(&bkgf);
+        piPow=piPowerOut(&bkgf);
         if((piPow!=0. && piPow/piPow!=1.)) // These two separate checks between them work on all the compilers I've tested
         {
             printf("Unstable solution developed. Pi not numerical at t=%Le\n",t);
@@ -327,8 +330,8 @@ void outputslice()//externally called function for outputting the data from the 
             exit(1);
         }
         
-        
-        fprintf(slicetime,"%Lf %Le %Le %Le\n",t, piPow, bkgf, profile(t));//hij_powerout(),
+        fprintf(slicetime,"%Lf %Le ",piPow, bkgf);//hij_powerout(),
+#endif
         fclose(slicetime);
         
         first++;

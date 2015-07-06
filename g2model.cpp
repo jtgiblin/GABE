@@ -223,7 +223,7 @@ void initfields()//here the user may decide how the fields will be initialized
         printf("Fields fluctuated\n");
 #endif
         
-        //Any other model specific initialization can go here -- i.e. Bubbles, etc  
+        //Any other model specific initialization can go here -- i.e. Bubbles, etc	
     }
     
     calcEnergy(0); //This is important -- needed for first step of evolution

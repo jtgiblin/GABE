@@ -55,32 +55,34 @@ int main()
     
     for(t=starttime;t<=endtime;t+=dt)//This is the main for-loop over time. Note that the current t value is the time for the currently evaluated fields
     {
-        
+		
         if(t==starttime)
         {
             initfields();//Initializes fields as defined in model.h
             printf("Fields initialized (no fluctuations).\n");
             initexpansion();//start expansion;
             printf("No expansion.\n");
-            
+			
             initfields();//do fluctuations
             printf("Model Specific Initialization Completed\n");
 
             printf("Time evolution beginning.....\n");
             
-            screenout();//outputs current pr time to screen (see g2output.cpp)
-            outputslice();//outputs slice values to file
+			screenout();//outputs current pr time to screen (see g2output.cpp)
+			outputslice();//outputs slice values to file
 
         }
 #if int_order==2
-        step();//evolves the fields one step
+		step();//evolves the fields one step
 #elif int_order==4
         steprk4();
 #endif
-        screenout();//outputs current pr time to screen
-        outputslice();//outputs slice values to file
+		screenout();//outputs current pr time to screen
+		outputslice();//outputs slice values to file
+#if nan_check==1
         nancheck();
-    }
+#endif
+	}
 #if spec_output==1
     specClear();//clears fftw stuff needed for spectra at the end of the run
 #endif
