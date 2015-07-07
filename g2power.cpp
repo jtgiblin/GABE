@@ -193,7 +193,7 @@ void modePowerOut(gNum tin, int first){
 				blmr[lmINDEX(l,m)]+=tPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
 			}
 		}
-		totPow=rPi*tPi;
+		totPow+=rPi*tPi;
 	}
 
 	static FILE *powerout;
@@ -207,7 +207,7 @@ void modePowerOut(gNum tin, int first){
         exit(1);
     }
 
-    fprintf(powerout, "%Le %Le %Le %Le %Le ",tin, profile(t), totPow/dOmega, (piPow-bkgf)*dx*dx);
+    fprintf(powerout, "%Le %Le %Le %Le ",tin, profile(t), totPow*dOmega, (piPow-bkgf)*dx*dx);
 	for(gIdx l=0;l<4;l++){
 		for(gIdx m=-l;m<=l;m++) {
 		fprintf(powerout, "%Le %Le %Le %Le ",almc[lmINDEX(l,m)]*dOmega,almr[lmINDEX(l,m)]*dOmega,blmc[lmINDEX(l,m)]*dOmega,blmr[lmINDEX(l,m)]*dOmega);
