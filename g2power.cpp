@@ -9,14 +9,14 @@ void deIndex(gIdx num, gIdx *i, gIdx *j, gIdx *k)
 	*k=(num%(N*N))%N;
 }
 
-gIdx countSphere(){
+gIdx countSphere(gIdx radSphere){
 	gIdx count=0;
 	gIdx i,j,k;
 	
 	LOOP{
 		if(
-			(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)<(N/2-1)*(N/2-1)
-			&&(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)>=(N/2-2)*(N/2-2)
+			(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)<(radSphere-1)*(radSphere-1)
+			&&(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)>=(radSphere-2)*(radSphere-2)
 			){
 			count++;
 		}
@@ -24,14 +24,14 @@ gIdx countSphere(){
 	return count;
 }
 
-void makeSphere(gNum sphere[], gIdx nSphere){
+void makeSphere(gNum sphere[], gIdx nSphere, gIdx radSphere){
 	gIdx count=0;
 	gIdx i,j,k;
 	
 	LOOP{
 		if(
-			(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)<(N/2-1)*(N/2-1)
-			&&(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)>=(N/2-2)*(N/2-2)
+			(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)<(radSphere-1)*(radSphere-1)
+			&&(i-N/2)*(i-N/2)+(k-N/2)*(k-N/2)+(j-N/2)*(j-N/2)>=(radSphere-2)*(radSphere-2)
 			){
 			sphere[count]=k+N*j+N*N*i;
 			count++;
@@ -154,19 +154,19 @@ gNum cSphY(gIdx lmIdx, gNum cp, gNum sp, gNum ct, gNum st){
 	}
 }
 
-void modePowerOut(gNum tin, int first){
+void modePowerOut(gNum tin, int first, gIdx RR){
 	gIdx idx,i,j,k;
 	gNum x,y,z,rPi,tPi;
 	gNum cp,sp,ct,st,totPow;
 	//the size of these are 16 to cary upto octopole terms
-	static const gIdx nSphere=countSphere();
 	gNum almc[16]={0.};
 	gNum almr[16]={0.};
 	gNum blmc[16]={0.};
 	gNum blmr[16]={0.};
+	gIdx nSphere=countSphere(RR);
 	gNum sphere[nSphere];//this stores the index of the points along our sphere
-	makeSphere(sphere,nSphere);
-	static const gNum dOmega=4.*M_PI*(N/2.-.5)*(N/2.-.5)/(double)nSphere;
+	makeSphere(sphere,nSphere,RR);
+	const gNum dOmega=4.*M_PI/(double)nSphere;
 	totPow=0.;
 	for(idx=0;idx<nSphere;idx++){
 		deIndex(sphere[idx],&i,&j,&k);
@@ -187,27 +187,27 @@ void modePowerOut(gNum tin, int first){
 		st=sqrtl((x*x)+(y*y))/sqrtl((x*x)+(y*y)+(z*z));
 		for(gIdx l=0;l<4;l++){
 			for(gIdx m=-l;m<=l;m++) {
-				almc[lmINDEX(l,m)]+=rPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
-				almr[lmINDEX(l,m)]+=rPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
-				blmc[lmINDEX(l,m)]+=tPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
-				blmr[lmINDEX(l,m)]+=tPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
+				almc[lmINDEX(l,m)]+=st*rPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
+				almr[lmINDEX(l,m)]+=st*rPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
+				blmc[lmINDEX(l,m)]+=st*tPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
+				blmr[lmINDEX(l,m)]+=st*tPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
 			}
 		}
-		totPow+=rPi*tPi;
+		totPow+=st*rPi*tPi;
 	}
 
 	static FILE *powerout;
-	powerout=fopen("./slices/power.dat","a");
-	gNum bkgf, piPow;
-    piPow=piPowerOut(&bkgf);
-    if((piPow!=0. && piPow/piPow!=1.)) // These two separate checks between them work on all the compilers I've tested
+	char powername[100];
+	sprintf(powername, "./slices/power%d.dat",RR);
+	powerout=fopen(powername,"a");
+	if((totPow!=0. && totPow/totPow!=1.)) // These two separate checks between them work on all the compilers I've tested
     {
         printf("Unstable solution developed. Pi not numerical at t=%Le\n",tin);
         output_parameters();
         exit(1);
     }
 
-    fprintf(powerout, "%Le %Le %Le %Le ",tin, profile(t), totPow*dOmega, (piPow-bkgf)*dx*dx);
+    fprintf(powerout, "%Le ",totPow*dOmega*(RR-.5)*(RR-.5)*dx*dx);
 	for(gIdx l=0;l<4;l++){
 		for(gIdx m=-l;m<=l;m++) {
 		fprintf(powerout, "%Le %Le %Le %Le ",almc[lmINDEX(l,m)]*dOmega,almr[lmINDEX(l,m)]*dOmega,blmc[lmINDEX(l,m)]*dOmega,blmr[lmINDEX(l,m)]*dOmega);

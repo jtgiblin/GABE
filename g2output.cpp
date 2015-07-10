@@ -34,11 +34,9 @@ gNum piPowerOut(gNum *bkgf){
         for (gIdx j=0; j<N; j++) {
             
             mbkg0=profile(t)*(-N/2.)/sqrtl(pw2(i-N/2.)+pw2(j-N/2.)+pw2(-N/2.))*dfdr_analytic(0,0,i,j,0,t);
-            
-            //1./pw2(4*M_PI*dx*dx*(pw2(i-N/2.)+pw2(j-N/2.)+pw2(-N/2.)));
-            
+                     
             mbkgN=profile(t)*(N/2.-1.)/sqrtl(pw2(i-N/2.)+pw2(j-N/2.)+pw2(N/2.-1.))*dfdr_analytic(0,0,i,j,N-1,t);
-            //1./pw2(4*M_PI*dx*dx*(pw2(i-N/2.)+pw2(j-N/2.)+pw2(N/2.-1.)));
+            
             
             *bkgf+=(mbkgN)*dfield[INDEX(0, nflds-1,N-1,i,j)];
             
@@ -313,7 +311,9 @@ void outputslice()//externally called function for outputting the data from the 
 #endif
 
 #if pow_output!=0
-        modePowerOut(t,first);
+        modePowerOut(t,first,75);
+        modePowerOut(t,first,66);
+        modePowerOut(t,first,57);
 #endif     
         
         /*times file output */
@@ -330,7 +330,7 @@ void outputslice()//externally called function for outputting the data from the 
             exit(1);
         }
         
-        fprintf(slicetime,"%Lf %Le ",piPow, bkgf);//hij_powerout(),
+        fprintf(slicetime,"%Lf %Le ",piPow*dx*dx, bkgf*dx*dx);//hij_powerout(),
 #endif
         fclose(slicetime);
         

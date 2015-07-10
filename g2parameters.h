@@ -30,19 +30,19 @@ const gNum alpha = 1.; // This is the proportionality constant relating the ener
 
 #define galileon_order 3// 2 for linear 3 for cubic 4 for quartic eventually 5 for quintic
 //the following assume A=rb/2
-const gNum kappa = 2.*rstar*rstar*rstar/sqrtl((1.+alpha)*M_PI*omega); //used in the Galileon EOM
+const gNum kappa = 2.*rstar*rstar*rstar/sqrtl((1.+alpha)*M_PI)/omega; //used in the Galileon EOM
 const gNum kappa2 = kappa*kappa; //Kappa-squared
-const gNum lambda = 8.*sqrtl(M_PI*omega/(1.+alpha));
+const gNum lambda = 8.*omega*sqrtl(M_PI/(1.+alpha));
 /***************************
  model independent parameters
  ***************************/
 #define parallelize 1// for parallelization set to 1 and set other variables set to 0 for no parallelization
-#define tot_num_thrds 8//total (max) number of threads to run during program
+#define tot_num_thrds 24//total (max) number of threads to run during program
 const int randseed=44463132;//seed for rand number generator
-const gIdx N=300;//number of points along one side of grid
+const gIdx N=150;//number of points along one side of grid
 const gNum L=25.;// length of one side of box in prgm units
 const gNum starttime=0.;//start time of simulation
-const gNum endtime=100.;//end time of simulations
+const gNum endtime=300.;//end time of simulations
 const gNum dt=0.001;//time step size
 #define int_order 2//integration order (2 or 4)
 #define expansion_type 0//(0 for no expansion 1 for evolving from adot 2 for user defined expansion 
@@ -63,7 +63,7 @@ const gNum dt=0.001;//time step size
  output parameters
  *****************/
 const gNum screentime=60;// in seconds how frequently output prgm time to screen
-const int slicewait=0;//how many dt's to wait between outputs (1 for no waiting) if 0 then slicenumber will be used.
+const int slicewait=500;//how many dt's to wait between outputs (1 for no waiting) if 0 then slicenumber will be used.
 const int slicenumber=1;//approx number of slices to output (only used if slicewait=0)
 const int field_sliceskip=4;//how many points to print in field profile (1 is every, 2 every two, 3 every three...)
 const int specnumber=1; //how many spectra to out put (1= every output slice 2 every two....)
