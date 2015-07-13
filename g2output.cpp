@@ -89,13 +89,13 @@ void outputfield(int first)//outputs the field values
     slicefield=fopen(name,"w");
     
     sprintf(energyname, "./energy/energydensity_%d.dat", first);
-    energyslice = fopen(energyname, "w");
+    //energyslice = fopen(energyname, "w");
     
     sprintf(gravname, "./gravrhoslices/slices_gravrho_%d.dat", first);
     //gravrhoslice = fopen(gravname, "w");
     
     sprintf(sourcename, "./source/slices_source_%d.dat", first);
-    sourceslice = fopen(sourcename, "w");
+    //sourceslice = fopen(sourcename, "w");
     
 #if field_outdim==3//outputs slice for 3 dimensions
     fld=0;
@@ -204,20 +204,20 @@ void outputfield(int first)//outputs the field values
         //int fld=3;
         for(int fld=0;fld<nflds;fld++)
         {
-            fprintf(slicefield,"%Le ", field[INDEX(0,fld,N/2,N/2,k)]);
-            fprintf(sourceslice,"%Le ", source(0,fld,N/2,N/2,k)+source2(0,fld,N/2,N/2,k));
+            fprintf(slicefield,"%Le ", field[INDEX(0,fld,k,N/2,N/2)]);
+            //fprintf(sourceslice,"%Le ", source(0,fld,k,N/2,N/2)+source2(0,fld,k,N/2,N/2));
         }
         fprintf(slicefield, "\n");
-        fprintf(sourceslice, "\n");
+        //fprintf(sourceslice, "\n");
         
         
     }
     
 #endif
     fclose(slicefield);
-    fclose(energyslice);
+    //fclose(energyslice);
      //fclose(gravrhoslice);
-    fclose(sourceslice);
+    //fclose(sourceslice);
 }
 
 

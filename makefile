@@ -19,7 +19,7 @@ g2main.o: g2header.h g2parameters.h g2main.cpp
 g2spectra.o: g2header.h g2parameters.h g2spectra.cpp
 	$(COMPILER) -c $(FLAGS)  g2spectra.cpp
 
-g2power.o: g2header.h g2parameters.h g2power.cpp
+g2power.o: g2header.h g2parameters.h g2sphericalharmonics.h g2power.cpp
 	$(COMPILER) -c $(FLAGS)  g2power.cpp
 
 g2model.o: g2header.h g2parameters.h g2model.cpp

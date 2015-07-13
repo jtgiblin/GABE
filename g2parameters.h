@@ -3,7 +3,7 @@
  ****************************/
 
 /*
- This headr file contains the adjustable and non adjustable global parameters for the GABE2.0 program.
+ This header file contains the adjustable and non adjustable global parameters for the GABE2.0 program.
  
  Copyright (2013): 
  Kenyon College
@@ -65,16 +65,16 @@ const gNum dt=0.001;//time step size
 const gNum screentime=60;// in seconds how frequently output prgm time to screen
 const int slicewait=500;//how many dt's to wait between outputs (1 for no waiting) if 0 then slicenumber will be used.
 const int slicenumber=1;//approx number of slices to output (only used if slicewait=0)
-const int field_sliceskip=4;//how many points to print in field profile (1 is every, 2 every two, 3 every three...)
+const int field_sliceskip=1;//how many points to print in field profile (1 is every, 2 every two, 3 every three...)
 const int specnumber=1; //how many spectra to out put (1= every output slice 2 every two....)
 #define field_outdim 0// number of dimensions of output in field profile (0 for no output)
 #define spec_output  0// 1 to output spectra, 0 for no spectra output
 #define var_output   0// 1 to output mean and variance, 0 for no variance output
 #define slice_orient 0// 0 for xy-slice; 1 for yz-slice; 2 for xz-slice
-#define pi_powerout 0
+#define pi_powerout 0 // 1 to output power on edge of box (don't want to do b/c of V correction)
 #define nan_check 0//1 to have ind nan-check
-//#define NSPHERE 48770//Number of points on the power sphere
 #define pow_output 1//1 to output spherical power
+#define MAX_MODE 6// define the max l mode to calculate (no more than 6)
 /*********************************
  These are important DO NOT CHANGE
  *********************************/
