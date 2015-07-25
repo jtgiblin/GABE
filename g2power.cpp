@@ -78,13 +78,13 @@ void modePowerOut(gNum tin, int first, gIdx RR){
 		st=sqrtl((x*x)+(y*y))/sqrtl((x*x)+(y*y)+(z*z));
 		for(gIdx l=0;l<=MAX_MODE;l++){
 			for(gIdx m=-l;m<=l;m++) {
-				almc[lmINDEX(l,m)]+=st*rPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
-				almr[lmINDEX(l,m)]+=st*rPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
-				blmc[lmINDEX(l,m)]+=st*tPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
-				blmr[lmINDEX(l,m)]+=st*tPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
+				almc[lmINDEX(l,m)]+=rPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
+				almr[lmINDEX(l,m)]+=rPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
+				blmc[lmINDEX(l,m)]+=tPi*cSphY(lmINDEX(l,m),cp,sp,ct,st);
+				blmr[lmINDEX(l,m)]+=tPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
 			}
 		}
-		totPow+=st*rPi*tPi;
+		totPow+=rPi*tPi;
 	}
 
 	for(gIdx l=0;l<=MAX_MODE;l++){
