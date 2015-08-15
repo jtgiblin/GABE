@@ -54,7 +54,7 @@ void modePowerOut(gNum tin, int first, gIdx RR){
 	gNum plc[MAX_MODE+1]={0.};
 	gNum p[2]={0.};
 	gIdx nSphere=countSphere(RR);
-	gNum sphere[nSphere];//this stores the index of the points along our sphere
+	gNum *sphere = new gNum[nSphere];//this stores the index of the points along our sphere
 	makeSphere(sphere,nSphere,RR);
 	gNum dOmega=4.*M_PI/(double)nSphere;
 	gNum rSquared=(RR-.5)*(RR-.5)*dx*dx;
@@ -84,14 +84,15 @@ void modePowerOut(gNum tin, int first, gIdx RR){
 				blmr[lmINDEX(l,m)]+=tPi*rSphY(lmINDEX(l,m),cp,sp,ct,st);
 			}
 		}
-		totPow+=rPi*tPi;
+		//totPow+=rPi*tPi;
+		totPow+=tPi*tPi;
 	}
-
+	delete sphere;
 	for(gIdx l=0;l<=MAX_MODE;l++){
 		for(gIdx m=-l;m<=l;m++) {
 			plr[l]+=almc[lmINDEX(l,m)]*blmc[lmINDEX(l,m)]+almr[lmINDEX(l,m)]*blmr[lmINDEX(l,m)];
 			plc[l]+=almr[lmINDEX(l,m)]*blmc[lmINDEX(l,m)]-almc[lmINDEX(l,m)]*blmr[lmINDEX(l,m)];
-		}
+			}
 		p[0]+=plr[l];
 		p[1]+=plc[l];
 	}
@@ -108,7 +109,7 @@ void modePowerOut(gNum tin, int first, gIdx RR){
         exit(1);
     }
 
-    fprintf(powerout, "%Le %Le %Le ",totPow*dOmega*rSquared,p[0]*dOmega*dOmega*rSquared,p[1]*dOmega*dOmega*rSquared);
+    fprintf(powerout, "%Le %Le %Le ",totPow*dOmega*rSquared/cs,p[0]*dOmega*dOmega*rSquared,p[1]*dOmega*dOmega*rSquared);
 	for(gIdx l=0;l<=MAX_MODE;l++){
 		fprintf(powerout, "%Le %Le ",plr[l]*dOmega*dOmega*rSquared,plc[l]*dOmega*dOmega*rSquared);
 		

@@ -74,6 +74,8 @@ int main()
         }
 #if int_order==2
 		step();//evolves the fields one step
+#elif int_order==3
+        SphStep();
 #elif int_order==4
         steprk4();
 #endif

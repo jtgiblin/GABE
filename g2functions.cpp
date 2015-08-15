@@ -287,13 +287,27 @@ void step()//this steps (integrates) the field and it time derivative via the rk
         {
             for(i=0;i<N;i++)
             {
-                dfield[INDEX(1,fld,N-1,i,k)]=-dfdr_pert(field,0,fld,N-1,i,k,tin);
-                dfield[INDEX(1,fld,i,k,N-1)]=-dfdr_pert(field,0,fld,i,k,N-1,tin);
-                dfield[INDEX(1,fld,k,N-1,i)]=-dfdr_pert(field,0,fld,k,N-1,i,tin);
+
+                // gNum r2=(i-N/2.)*(i-N/2.)+(k-N/2.)*(k-N/2.)*dx*dx;
+                // gNum beta= 9*M_PI*r2*r2 + 32*sqrtl(r2)*rstar*rstar*rstar;
+                // gNum cs=2*sqrtl(beta/(3*beta - 6*sqrtl(beta)*sqrtl(M_PI)*r2 + 27*M_PI*r2*r2));
+                // gNum dAbA=(-1/2. + (3*sqrtl(M_PI)*r2)/(2.*sqrtl(beta)) - (24*M_PI*r2*r2)/(beta - 2*sqrtl(beta)*sqrtl(M_PI)*r2 + 9*M_PI*r2*r2))/sqrtl(r2);
+
+                dfield[INDEX(1,fld,N-1,i,k)]=-dfdr_pert(field,1,fld,N-1,i,k,tin);//profile(tin)*(-cs*dfdr_pert(field,1,fld,N-1,i,k,tin)+cs*dAbA*(field[INDEX(1,fld,N-1,i,k)]-bkgFld_bound(r2)));
+                dfield[INDEX(1,fld,i,k,N-1)]=-dfdr_pert(field,1,fld,i,k,N-1,tin);//profile(tin)*(-cs*dfdr_pert(field,1,fld,i,k,N-1,tin)+cs*dAbA*(field[INDEX(1,fld,i,k,N-1)]-bkgFld_bound(r2)));
+                dfield[INDEX(1,fld,k,N-1,i)]=-dfdr_pert(field,1,fld,k,N-1,i,tin);//profile(tin)*(-cs*dfdr_pert(field,1,fld,k,N-1,i,tin)+cs*dAbA*(field[INDEX(1,fld,k,N-1,i)]-bkgFld_bound(r2)));
                 
-                dfield[INDEX(1,fld,0,i,k)]=-dfdr_pert(field,0,fld,0,i,k,tin);
-                dfield[INDEX(1,fld,i,k,0)]=-dfdr_pert(field,0,fld,i,k,0,tin);
-                dfield[INDEX(1,fld,k,0,i)]=-dfdr_pert(field,0,fld,k,0,i,tin);
+                dfield[INDEX(1,fld,0,i,k)]=-dfdr_pert(field,1,fld,0,i,k,tin);//profile(tin)*(-cs*dfdr_pert(field,1,fld,0,i,k,tin)+cs*dAbA*(field[INDEX(1,fld,0,i,k)]-bkgFld_bound(r2)));
+                dfield[INDEX(1,fld,i,k,0)]=-dfdr_pert(field,1,fld,i,k,0,tin);//profile(tin)*(-cs*dfdr_pert(field,1,fld,i,k,0,tin)+cs*dAbA*(field[INDEX(1,fld,i,k,0)]-bkgFld_bound(r2)));
+                dfield[INDEX(1,fld,k,0,i)]=-dfdr_pert(field,1,fld,k,0,i,tin);//profile(tin)*(-cs*dfdr_pert(field,1,fld,k,0,i,tin)+cs*dAbA*(field[INDEX(1,fld,k,0,i)]-bkgFld_bound(r2)));
+
+                // dfield[INDEX(1,fld,N-1,i,k)]=-dfdr_pert(field,0,fld,N-1,i,k,tin);
+                // dfield[INDEX(1,fld,i,k,N-1)]=-dfdr_pert(field,0,fld,i,k,N-1,tin);
+                // dfield[INDEX(1,fld,k,N-1,i)]=-dfdr_pert(field,0,fld,k,N-1,i,tin);
+                
+                // dfield[INDEX(1,fld,0,i,k)]=-dfdr_pert(field,0,fld,0,i,k,tin);
+                // dfield[INDEX(1,fld,i,k,0)]=-dfdr_pert(field,0,fld,i,k,0,tin);
+                // dfield[INDEX(1,fld,k,0,i)]=-dfdr_pert(field,0,fld,k,0,i,tin);
             }
         }
     }
@@ -318,13 +332,27 @@ void step()//this steps (integrates) the field and it time derivative via the rk
         {
             for(i=0;i<N;i++)
             {
-                dfield[INDEX(0,fld,N-1,i,k)]=-dfdr_pert(field,1,fld,N-1,i,k,tin);
-                dfield[INDEX(0,fld,i,k,N-1)]=-dfdr_pert(field,1,fld,i,k,N-1,tin);
-                dfield[INDEX(0,fld,k,N-1,i)]=-dfdr_pert(field,1,fld,k,N-1,i,tin);
+
+                // gNum r2=(i-N/2.)*(i-N/2.)+(k-N/2.)*(k-N/2.)*dx*dx;
+                // gNum beta= 9*M_PI*r2*r2 + 32*sqrtl(r2)*rstar*rstar*rstar;
+                // gNum cs=2*sqrtl(beta/(3*beta - 6*sqrtl(beta)*sqrtl(M_PI)*r2 + 27*M_PI*r2*r2));
+                // gNum dAbA=(-1/2. + (3*sqrtl(M_PI)*r2)/(2.*sqrtl(beta)) - (24*M_PI*r2*r2)/(beta - 2*sqrtl(beta)*sqrtl(M_PI)*r2 + 9*M_PI*r2*r2))/sqrtl(r2);
+
+                dfield[INDEX(0,fld,N-1,i,k)]=-dfdr_pert(field,0,fld,N-1,i,k,tin);//profile(tin)*(-cs*dfdr_pert(field,0,fld,N-1,i,k,tin)+cs*dAbA*(field[INDEX(0,fld,N-1,i,k)]-bkgFld_bound(r2)));
+                dfield[INDEX(0,fld,i,k,N-1)]=-dfdr_pert(field,0,fld,i,k,N-1,tin);//profile(tin)*(-cs*dfdr_pert(field,0,fld,i,k,N-1,tin)+cs*dAbA*(field[INDEX(0,fld,i,k,N-1)]-bkgFld_bound(r2)));
+                dfield[INDEX(0,fld,k,N-1,i)]=-dfdr_pert(field,0,fld,k,N-1,i,tin);//profile(tin)*(-cs*dfdr_pert(field,0,fld,k,N-1,i,tin)+cs*dAbA*(field[INDEX(0,fld,k,N-1,i)]-bkgFld_bound(r2)));
                 
-                dfield[INDEX(0,fld,0,i,k)]=-dfdr_pert(field,1,fld,0,i,k,tin);
-                dfield[INDEX(0,fld,i,k,0)]=-dfdr_pert(field,1,fld,i,k,0,tin);
-                dfield[INDEX(0,fld,k,0,i)]=-dfdr_pert(field,1,fld,k,0,i,tin);
+                dfield[INDEX(0,fld,0,i,k)]=-dfdr_pert(field,0,fld,0,i,k,tin);//profile(tin)*(-cs*dfdr_pert(field,0,fld,0,i,k,tin)+cs*dAbA*(field[INDEX(0,fld,0,i,k)]-bkgFld_bound(r2)));
+                dfield[INDEX(0,fld,i,k,0)]=-dfdr_pert(field,0,fld,i,k,0,tin);//profile(tin)*(-cs*dfdr_pert(field,0,fld,i,k,0,tin)+cs*dAbA*(field[INDEX(0,fld,i,k,0)]-bkgFld_bound(r2)));
+                dfield[INDEX(0,fld,k,0,i)]=-dfdr_pert(field,0,fld,k,0,i,tin);//profile(tin)*(-cs*dfdr_pert(field,0,fld,k,0,i,tin)+cs*dAbA*(field[INDEX(0,fld,k,0,i)]-bkgFld_bound(r2)));
+
+                // dfield[INDEX(0,fld,N-1,i,k)]=-dfdr_pert(field,1,fld,N-1,i,k,tin);
+                // dfield[INDEX(0,fld,i,k,N-1)]=-dfdr_pert(field,1,fld,i,k,N-1,tin);
+                // dfield[INDEX(0,fld,k,N-1,i)]=-dfdr_pert(field,1,fld,k,N-1,i,tin);
+                
+                // dfield[INDEX(0,fld,0,i,k)]=-dfdr_pert(field,1,fld,0,i,k,tin);
+                // dfield[INDEX(0,fld,i,k,0)]=-dfdr_pert(field,1,fld,i,k,0,tin);
+                // dfield[INDEX(0,fld,k,0,i)]=-dfdr_pert(field,1,fld,k,0,i,tin);
             }
         }
     }
@@ -423,13 +451,19 @@ void steprk4()//this steps (integrates) the field and it time derivative via the
     {
         for(i=0;i<N;i++)
         {
-            dfield[INDEX(1,fld,N-1,i,k)]=-dfdr_pert(field,1,fld,N-1,i,k,tin);
-            dfield[INDEX(1,fld,i,k,N-1)]=-dfdr_pert(field,1,fld,i,k,N-1,tin);
-            dfield[INDEX(1,fld,k,N-1,i)]=-dfdr_pert(field,1,fld,k,N-1,i,tin);
+            gNum r2=(i-N/2.)*(i-N/2.)+(k-N/2.)*(k-N/2.)*dx*dx;
+            gNum beta= 9*M_PI*r2*r2 + 32*sqrtl(r2)*rstar*rstar*rstar;
+            gNum cs=2*sqrtl(beta/(3*beta - 6*sqrtl(beta)*sqrtl(M_PI)*r2 + 27*M_PI*r2*r2));
+            gNum dAbA=(-1/2. + (3*sqrtl(M_PI)*r2)/(2.*sqrtl(beta)) - 
+   (24*M_PI*r2*r2)/(beta - 2*sqrtl(beta)*sqrtl(M_PI)*r2 + 9*M_PI*r2*r2))/sqrtl(r2);
+
+            dfield[INDEX(1,fld,N-1,i,k)]=-cs*dfdr_pert(field,1,fld,N-1,i,k,tin)+cs*dAbA*(field[INDEX(1,fld,N-1,i,k)]-bkgFld_bound(r2));
+            dfield[INDEX(1,fld,i,k,N-1)]=-cs*dfdr_pert(field,1,fld,i,k,N-1,tin)+cs*dAbA*(field[INDEX(1,fld,i,k,N-1)]-bkgFld_bound(r2));
+            dfield[INDEX(1,fld,k,N-1,i)]=-cs*dfdr_pert(field,1,fld,k,N-1,i,tin)+cs*dAbA*(field[INDEX(1,fld,k,N-1,i)]-bkgFld_bound(r2));
             
-            dfield[INDEX(1,fld,0,i,k)]=-dfdr_pert(field,1,fld,0,i,k,tin);
-            dfield[INDEX(1,fld,i,k,0)]=-dfdr_pert(field,1,fld,i,k,0,tin);
-            dfield[INDEX(1,fld,k,0,i)]=-dfdr_pert(field,1,fld,k,0,i,tin);
+            dfield[INDEX(1,fld,0,i,k)]=-cs*dfdr_pert(field,1,fld,0,i,k,tin)+cs*dAbA*(field[INDEX(1,fld,0,i,k)]-bkgFld_bound(r2));
+            dfield[INDEX(1,fld,i,k,0)]=-cs*dfdr_pert(field,1,fld,i,k,0,tin)+cs*dAbA*(field[INDEX(1,fld,i,k,0)]-bkgFld_bound(r2));
+            dfield[INDEX(1,fld,k,0,i)]=-cs*dfdr_pert(field,1,fld,k,0,i,tin)+cs*dAbA*(field[INDEX(1,fld,k,0,i)]-bkgFld_bound(r2));
         }
     }
     
@@ -447,13 +481,26 @@ void steprk4()//this steps (integrates) the field and it time derivative via the
     {
         for(i=0;i<N;i++)
         {
-            dfield[INDEX(2,fld,N-1,i,k)]=-dfdr_pert(field,2,fld,N-1,i,k,tin);
-            dfield[INDEX(2,fld,i,k,N-1)]=-dfdr_pert(field,2,fld,i,k,N-1,tin);
-            dfield[INDEX(2,fld,k,N-1,i)]=-dfdr_pert(field,2,fld,k,N-1,i,tin);
+            gNum r2=(i-N/2.)*(i-N/2.)+(k-N/2.)*(k-N/2.)*dx*dx;
+            gNum beta= 9*M_PI*r2*r2 + 32*sqrtl(r2)*rstar*rstar*rstar;
+            gNum cs=2*sqrtl(beta/(3*beta - 6*sqrtl(beta)*sqrtl(M_PI)*r2 + 27*M_PI*r2*r2));
+            gNum dAbA=(-1/2. + (3*sqrtl(M_PI)*r2)/(2.*sqrtl(beta)) - 
+   (24*M_PI*r2*r2)/(beta - 2*sqrtl(beta)*sqrtl(M_PI)*r2 + 9*M_PI*r2*r2))/sqrtl(r2);
+
+            dfield[INDEX(2,fld,N-1,i,k)]=-cs*dfdr_pert(field,2,fld,N-1,i,k,tin)+cs*dAbA*(field[INDEX(2,fld,N-1,i,k)]-bkgFld_bound(r2));
+            dfield[INDEX(2,fld,i,k,N-1)]=-cs*dfdr_pert(field,2,fld,i,k,N-1,tin)+cs*dAbA*(field[INDEX(2,fld,i,k,N-1)]-bkgFld_bound(r2));
+            dfield[INDEX(2,fld,k,N-1,i)]=-cs*dfdr_pert(field,2,fld,k,N-1,i,tin)+cs*dAbA*(field[INDEX(2,fld,k,N-1,i)]-bkgFld_bound(r2));
             
-            dfield[INDEX(2,fld,0,i,k)]=-dfdr_pert(field,2,fld,0,i,k,tin);
-            dfield[INDEX(2,fld,i,k,0)]=-dfdr_pert(field,2,fld,i,k,0,tin);
-            dfield[INDEX(2,fld,k,0,i)]=-dfdr_pert(field,2,fld,k,0,i,tin);
+            dfield[INDEX(2,fld,0,i,k)]=-cs*dfdr_pert(field,2,fld,0,i,k,tin)+cs*dAbA*(field[INDEX(2,fld,0,i,k)]-bkgFld_bound(r2));
+            dfield[INDEX(2,fld,i,k,0)]=-cs*dfdr_pert(field,2,fld,i,k,0,tin)+cs*dAbA*(field[INDEX(2,fld,i,k,0)]-bkgFld_bound(r2));
+            dfield[INDEX(2,fld,k,0,i)]=-cs*dfdr_pert(field,2,fld,k,0,i,tin)+cs*dAbA*(field[INDEX(2,fld,k,0,i)]-bkgFld_bound(r2));
+            // dfield[INDEX(2,fld,N-1,i,k)]=-dfdr_pert(field,2,fld,N-1,i,k,tin);
+            // dfield[INDEX(2,fld,i,k,N-1)]=-dfdr_pert(field,2,fld,i,k,N-1,tin);
+            // dfield[INDEX(2,fld,k,N-1,i)]=-dfdr_pert(field,2,fld,k,N-1,i,tin);
+            
+            // dfield[INDEX(2,fld,0,i,k)]=-dfdr_pert(field,2,fld,0,i,k,tin);
+            // dfield[INDEX(2,fld,i,k,0)]=-dfdr_pert(field,2,fld,i,k,0,tin);
+            // dfield[INDEX(2,fld,k,0,i)]=-dfdr_pert(field,2,fld,k,0,i,tin);
         }
     }
     
@@ -472,13 +519,26 @@ void steprk4()//this steps (integrates) the field and it time derivative via the
     {
         for(i=0;i<N;i++)
         {
-            dfield[INDEX(3,fld,N-1,i,k)]=-dfdr_pert(field,3,fld,N-1,i,k,tin);
-            dfield[INDEX(3,fld,i,k,N-1)]=-dfdr_pert(field,3,fld,i,k,N-1,tin);
-            dfield[INDEX(3,fld,k,N-1,i)]=-dfdr_pert(field,3,fld,k,N-1,i,tin);
+            gNum r2=(i-N/2.)*(i-N/2.)+(k-N/2.)*(k-N/2.)*dx*dx;
+            gNum beta= 9*M_PI*r2*r2 + 32*sqrtl(r2)*rstar*rstar*rstar;
+            gNum cs=2*sqrtl(beta/(3*beta - 6*sqrtl(beta)*sqrtl(M_PI)*r2 + 27*M_PI*r2*r2));
+            gNum dAbA=(-1/2. + (3*sqrtl(M_PI)*r2)/(2.*sqrtl(beta)) - 
+   (24*M_PI*r2*r2)/(beta - 2*sqrtl(beta)*sqrtl(M_PI)*r2 + 9*M_PI*r2*r2))/sqrtl(r2);
+
+            dfield[INDEX(3,fld,N-1,i,k)]=-cs*dfdr_pert(field,3,fld,N-1,i,k,tin)+cs*dAbA*(field[INDEX(3,fld,N-1,i,k)]-bkgFld_bound(r2));
+            dfield[INDEX(3,fld,i,k,N-1)]=-cs*dfdr_pert(field,3,fld,i,k,N-1,tin)+cs*dAbA*(field[INDEX(3,fld,i,k,N-1)]-bkgFld_bound(r2));
+            dfield[INDEX(3,fld,k,N-1,i)]=-cs*dfdr_pert(field,3,fld,k,N-1,i,tin)+cs*dAbA*(field[INDEX(3,fld,k,N-1,i)]-bkgFld_bound(r2));
             
-            dfield[INDEX(3,fld,0,i,k)]=-dfdr_pert(field,3,fld,0,i,k,tin);
-            dfield[INDEX(3,fld,i,k,0)]=-dfdr_pert(field,3,fld,i,k,0,tin);
-            dfield[INDEX(3,fld,k,0,i)]=-dfdr_pert(field,3,fld,k,0,i,tin);
+            dfield[INDEX(3,fld,0,i,k)]=-cs*dfdr_pert(field,3,fld,0,i,k,tin)+cs*dAbA*(field[INDEX(3,fld,0,i,k)]-bkgFld_bound(r2));
+            dfield[INDEX(3,fld,i,k,0)]=-cs*dfdr_pert(field,3,fld,i,k,0,tin)+cs*dAbA*(field[INDEX(3,fld,i,k,0)]-bkgFld_bound(r2));
+            dfield[INDEX(3,fld,k,0,i)]=-cs*dfdr_pert(field,3,fld,k,0,i,tin)+cs*dAbA*(field[INDEX(3,fld,k,0,i)]-bkgFld_bound(r2));
+            // dfield[INDEX(3,fld,N-1,i,k)]=-dfdr_pert(field,3,fld,N-1,i,k,tin);
+            // dfield[INDEX(3,fld,i,k,N-1)]=-dfdr_pert(field,3,fld,i,k,N-1,tin);
+            // dfield[INDEX(3,fld,k,N-1,i)]=-dfdr_pert(field,3,fld,k,N-1,i,tin);
+            
+            // dfield[INDEX(3,fld,0,i,k)]=-dfdr_pert(field,3,fld,0,i,k,tin);
+            // dfield[INDEX(3,fld,i,k,0)]=-dfdr_pert(field,3,fld,i,k,0,tin);
+            // dfield[INDEX(3,fld,k,0,i)]=-dfdr_pert(field,3,fld,k,0,i,tin);
         }
     }
     
@@ -498,16 +558,95 @@ void steprk4()//this steps (integrates) the field and it time derivative via the
     {
         for(i=0;i<N;i++)
         {
-            dfield[INDEX(0,fld,N-1,i,k)]=-dfdr_pert(field,0,fld,N-1,i,k,tin);
-            dfield[INDEX(0,fld,i,k,N-1)]=-dfdr_pert(field,0,fld,i,k,N-1,tin);
-            dfield[INDEX(0,fld,k,N-1,i)]=-dfdr_pert(field,0,fld,k,N-1,i,tin);
+        gNum r2=(i-N/2.)*(i-N/2.)+(k-N/2.)*(k-N/2.)*dx*dx;
+            gNum beta= 9*M_PI*r2*r2 + 32*sqrtl(r2)*rstar*rstar*rstar;
+            gNum cs=2*sqrtl(beta/(3*beta - 6*sqrtl(beta)*sqrtl(M_PI)*r2 + 27*M_PI*r2*r2));
+            gNum dAbA=(-1/2. + (3*sqrtl(M_PI)*r2)/(2.*sqrtl(beta)) - 
+   (24*M_PI*r2*r2)/(beta - 2*sqrtl(beta)*sqrtl(M_PI)*r2 + 9*M_PI*r2*r2))/sqrtl(r2); 
+
+            dfield[INDEX(0,fld,N-1,i,k)]=-cs*dfdr_pert(field,0,fld,N-1,i,k,tin)+cs*dAbA*(field[INDEX(0,fld,N-1,i,k)]-bkgFld_bound(r2));
+            dfield[INDEX(0,fld,i,k,N-1)]=-cs*dfdr_pert(field,0,fld,i,k,N-1,tin)+cs*dAbA*(field[INDEX(0,fld,i,k,N-1)]-bkgFld_bound(r2));
+            dfield[INDEX(0,fld,k,N-1,i)]=-cs*dfdr_pert(field,0,fld,k,N-1,i,tin)+cs*dAbA*(field[INDEX(0,fld,k,N-1,i)]-bkgFld_bound(r2));
             
-            dfield[INDEX(0,fld,0,i,k)]=-dfdr_pert(field,0,fld,0,i,k,tin);
-            dfield[INDEX(0,fld,i,k,0)]=-dfdr_pert(field,0,fld,i,k,0,tin);
-            dfield[INDEX(0,fld,k,0,i)]=-dfdr_pert(field,0,fld,k,0,i,tin);
+            dfield[INDEX(0,fld,0,i,k)]=-cs*dfdr_pert(field,0,fld,0,i,k,tin)+cs*dAbA*(field[INDEX(0,fld,0,i,k)]-bkgFld_bound(r2));
+            dfield[INDEX(0,fld,i,k,0)]=-cs*dfdr_pert(field,0,fld,i,k,0,tin)+cs*dAbA*(field[INDEX(0,fld,i,k,0)]-bkgFld_bound(r2));
+            dfield[INDEX(0,fld,k,0,i)]=-cs*dfdr_pert(field,0,fld,k,0,i,tin)+cs*dAbA*(field[INDEX(0,fld,k,0,i)]-bkgFld_bound(r2));
+
+            // dfield[INDEX(0,fld,N-1,i,k)]=-dfdr_pert(field,0,fld,N-1,i,k,tin);
+            // dfield[INDEX(0,fld,i,k,N-1)]=-dfdr_pert(field,0,fld,i,k,N-1,tin);
+            // dfield[INDEX(0,fld,k,N-1,i)]=-dfdr_pert(field,0,fld,k,N-1,i,tin);
+            
+            // dfield[INDEX(0,fld,0,i,k)]=-dfdr_pert(field,0,fld,0,i,k,tin);
+            // dfield[INDEX(0,fld,i,k,0)]=-dfdr_pert(field,0,fld,i,k,0,tin);
+            // dfield[INDEX(0,fld,k,0,i)]=-dfdr_pert(field,0,fld,k,0,i,tin);
         }
     }
     
+}
+
+inline gNum bkgFld_bound(gNum r2)
+{
+    return (-0.42441318157838753*rstar*rstar*rstar)/sqrtl(r2) + (0.03002109144958155*pw2(rstar*rstar*rstar))/r2/r2 - 
+   (0.009707692904055338*rstar*pw2(rstar*rstar*rstar*rstar))/(r2*r2*r2*sqrtl(r2)) + 
+   (0.004806751636395413*pw2(pw2(rstar*rstar*rstar)))/pw2(r2*r2*r2*r2*r2);
+}
+
+void SphStep(){
+ 
+    DECLARE_INDEX
+    
+    gNum tin=t;
+    for(fld=0;fld<nflds;fld++)//the first part of the RK2 step
+    {
+        //paralleleizes over the index i
+#pragma omp parallel for private (j,k) num_threads (tot_num_thrds) schedule (static,1)
+        LOOP//loops over fld i,j,k
+        {
+            if(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.)<=(N/2.)*(N/2.)){
+            field[INDEX(1,fld,i,j,k)]=field[INDEX(0,fld,i,j,k)]+.5*dt*dfield[INDEX(0,fld,i,j,k)];
+            dfield[INDEX(1,fld,i,j,k)]=dfield[INDEX(0,fld,i,j,k)]+.5*dt*ddfield(0,fld,i,j,k,tin);
+            }
+        }
+    }
+    
+    
+    for (fld=0;fld<nflds;fld++)
+    {  
+#pragma omp parallel for private (j,k) num_threads (tot_num_thrds) schedule (static,1)
+        LOOP
+        {
+            if((pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.)<(N/2.)*(N/2.))&&(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.)>=(N/2.-sqrtl(2))*(N/2.-sqrtl(2.))))
+            {
+                dfield[INDEX(1,fld,i,j,k)]=(-cs*dfdr_pert(field,1,fld,i,j,k,tin)+cs*dAbA*(field[INDEX(1,fld,i,j,k)]-profile(tin)*bkgFld_BCSPH));
+            }
+        }
+    }
+    
+    tin=t+.5*dt;
+    for(fld=0;fld<nflds;fld++)//the second part of the RK2 step
+    {
+        //paralleleizes over the index i
+#pragma omp parallel for private (j,k) num_threads (tot_num_thrds) schedule (static,1)
+        LOOP//This returns the actual value of the field and derivative at t
+        {
+            if(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.)<=(N/2.)*(N/2.)){
+            field[INDEX(0,fld,i,j,k)]=field[INDEX(0,fld,i,j,k)]+dt*dfield[INDEX(1,fld,i,j,k)];
+            dfield[INDEX(0,fld,i,j,k)]=dfield[INDEX(0,fld,i,j,k)]+dt*ddfield(1,fld,i,j,k,tin);
+            }
+        }
+    }
+    
+    for (fld=0;fld<nflds;fld++)
+    {  
+#pragma omp parallel for private (j,k) num_threads (tot_num_thrds) schedule (static,1)
+        LOOP
+        {
+            if((pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.)<(N/2.)*(N/2.))&&(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.)>=(N/2.-sqrtl(2.))*(N/2.-sqrtl(2))))
+            {
+                dfield[INDEX(0,fld,i,j,k)]=(-cs*dfdr_pert(field,0,fld,i,j,k,tin)+cs*dAbA*(field[INDEX(0,fld,i,j,k)]-profile(tin)*bkgFld_BCSPH));
+            }
+        }
+    }
 }
 
 

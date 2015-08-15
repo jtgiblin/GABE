@@ -193,6 +193,11 @@ void step();//performs the full RK2 integration
 
 void steprk4();// performs the full RK4 integration
 
+inline gNum bkgFld_bound(gNum r2);
+
+void SphStep();
+
+
 /**************
  Output Header
  *************/

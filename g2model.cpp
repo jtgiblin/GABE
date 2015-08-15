@@ -36,10 +36,10 @@ void modelinfo(FILE *info)
     fprintf(info,"Using Hulse-Taylor Binary Pulsar as Base Model\n Model Parameters\n");
     
     // Model specific parameter values
-    fprintf(info,"sigma2 = %Le",sigma2);
-    fprintf(info,"alpha = %Le",alpha);
+    fprintf(info,"sigma2 = %Le\n",sigma2);
+    fprintf(info,"alpha = %Le\n",alpha);
     fprintf(info,"Omega = %Le\n",omega);
-    fprintf(info,"Galileon Order = %d", galileon_order);
+    fprintf(info,"Galileon Order = %d\n", galileon_order);
     fprintf(info,"Kappa = %Le\n",kappa);
     fprintf(info,"Kappa^2 = %Le\n",kappa2);
     

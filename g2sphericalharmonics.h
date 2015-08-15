@@ -172,6 +172,9 @@ gNum rSphY(gIdx lmIdx, gNum cp, gNum sp, gNum ct, gNum st){
 		case 48:
 			return -(sqrtl(3003/M_PI)*(CP[6] - 15*CP[4]*SP[2] + 15*CP[2]*SP[4] - SP[6])*(CT[6] - 3*CT[4]*(2 + 5*ST[2]) - (1 + ST[2])*(10 + 5*ST[2] + ST[4]) + 3*CT[2]*(5 + 12*ST[2] + 5*ST[4])))/2048.;
 			break;
+		default:
+			return 0;
+			break;
 	}
 }
 
@@ -350,6 +353,9 @@ gNum cSphY(gIdx lmIdx, gNum cp, gNum sp, gNum ct, gNum st){
 			break;
 		case 48:
 			return -(cp*sqrtl(3003/M_PI)*sp*(3*CP[4] - 10*CP[2]*SP[2] + 3*SP[4])*(CT[6] - 3*CT[4]*(2 + 5*ST[2]) - (1 + ST[2])*(10 + 5*ST[2] + ST[4]) + 3*CT[2]*(5 + 12*ST[2] + 5*ST[4])))/1024.;
+			break;
+		default:
+			return 0;
 			break;
 	}
 }

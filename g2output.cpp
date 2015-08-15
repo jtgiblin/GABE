@@ -86,35 +86,59 @@ void outputfield(int first)//outputs the field values
     
     sprintf(name,"./slices/slices_fields_%d.dat", first);
     //sprintf(name,"slices_field%d_%d.dat", fld, first);
-    slicefield=fopen(name,"w");
+    //slicefield=fopen(name,"w");
     
     sprintf(energyname, "./energy/energydensity_%d.dat", first);
-    //energyslice = fopen(energyname, "w");
+    energyslice = fopen(energyname, "w");
     
     sprintf(gravname, "./gravrhoslices/slices_gravrho_%d.dat", first);
     //gravrhoslice = fopen(gravname, "w");
     
     sprintf(sourcename, "./source/slices_source_%d.dat", first);
-    //sourceslice = fopen(sourcename, "w");
+    sourceslice = fopen(sourcename, "w");
     
 #if field_outdim==3//outputs slice for 3 dimensions
     fld=0;
-    for(i=1;i<N-1;i+=field_sliceskip){
-        for(j=1;j<N-1;j+=field_sliceskip){
-            for(k=1;k<N-1;k+=field_sliceskip){
-                fprintf(slicefield,"%Le ", field[INDEX(0,fld,i,j,k)]);
-                fprintf(sourceslice,"%Le ", dfield[INDEX(0, fld, i, j, k)]);
+    for(i=1;i<N-1;i+=2){//field_sliceskip){
+        for(j=1;j<N-1;j+=2){//field_sliceskip){
+            for(k=1;k<N-1;k+=2){//field_sliceskip){
+                //fprintf(slicefield,"%Le ", field[INDEX(0,fld,i,j,k)]);
+                fprintf(sourceslice,"%Le ", pw2(dfield[INDEX(0, fld, i, j, k)]));
                 //fprintf(sourceslice,"%Le ", energyDensity(0,fld,i,j,k,t));
-                fprintf(energyslice,"%Le ", energyDensity(0,fld,i,j,k,t));
+                //fprintf(energyslice,"%Le ", energyDensity(0,fld,i,j,k,t));
             }
-            fprintf(slicefield,"\n");
+            //fprintf(slicefield,"\n");
             fprintf(sourceslice,"\n");
-            fprintf(energyslice,"\n");
+            //fprintf(energyslice,"\n");
         }
-        fprintf(slicefield,"\n");
-        fprintf(sourceslice,"\n");
-        fprintf(energyslice,"\n");
+        //fprintf(slicefield,"\n");
+        //fprintf(sourceslice,"\n");
+        //fprintf(energyslice,"\n");
     }
+    // LOOP
+    // if((pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.)<(74.)*(74.))&&(pw2(i-N/2.)+pw2(j-N/2.)+pw2(k-N/2.)>=(73.)*(73.))){
+    //     fprintf(slicefield,"%Le %Le %Le %Le\n", field[INDEX(0,fld,i,j,k)],dfield[INDEX(0,fld,i,j,k)],dfdr(field,0,0,i,j,k),dfdr_analytic(0,0,i,j,k,t));
+    // }
+
+    fld=0;
+    for(i=50;i<100;i+=field_sliceskip){
+        for(j=50;j<100;j+=field_sliceskip){
+            // for(k=50;k<100;k+=field_sliceskip){
+            //     //fprintf(slicefield,"%Le ", field[INDEX(0,fld,i,j,k)]);
+            //     fprintf(sourceslice,"%Le ", -energyDensity(0,fld,i,j,k,t));
+            //     //fprintf(sourceslice,"%Le ", energyDensity(0,fld,i,j,k,t));
+            //     //fprintf(energyslice,"%Le ", energyDensity(0,fld,i,j,k,t));
+            // }
+            //fprintf(slicefield,"\n");
+            fprintf(energyslice,"%Le ", -energyDensity(0,fld,i,j,N/2.,t));
+            //fprintf(energyslice,"\n");
+        }
+        fprintf(energyslice,"\n");
+        //fprintf(slicefield,"\n");
+        //fprintf(sourceslice,"\n");
+        //fprintf(energyslice,"\n");
+    }
+
 
 //THE BELOW NEEDS TO BE UPDATED WITH THE CURRENT OUTPUT AVAILABLE THINGS
 #elif field_outdim==2//outputs slice for 2dimensions
@@ -199,25 +223,42 @@ void outputfield(int first)//outputs the field values
     
 #elif field_outdim==1//outputs slice for 1dimension
     
-    for(int k=0;k<N;k+=field_sliceskip)
+    // for(int k=0;k<N;k+=field_sliceskip)
+    // {
+    //     //int fld=3;
+    //     for(int fld=0;fld<nflds;fld++)
+    //     {
+    //         fprintf(slicefield,"%Le ", field[INDEX(0,fld,k,N/2,N/2)]);
+    //         //fprintf(sourceslice,"%Le ", source(0,fld,k,N/2,N/2)+source2(0,fld,k,N/2,N/2));
+    //     }
+    //     fprintf(slicefield, "\n");
+    //     //fprintf(sourceslice, "\n");
+        
+        
+    // }
+    
+for(int k=1;k<N-1;k+=field_sliceskip)
     {
         //int fld=3;
         for(int fld=0;fld<nflds;fld++)
         {
-            fprintf(slicefield,"%Le ", field[INDEX(0,fld,k,N/2,N/2)]);
+            fprintf(slicefield,"%Le ", dfdr(field,0,fld,k,N/2.,N/2.));
+            //fprintf(sourceslice,"%d %d %d %Le %Le %Le\n",k,k,N/2, dfdr(field,0,fld,k,k,N/2), field[INDEX(0,fld,k,k,N/2)], dfield[INDEX(0,fld,k,k,N/2)]);
+            //fprintf(energyslice,"%Le %Le %Le\n", dfdr(field,0,fld,k,N/2,N/2), field[INDEX(0,fld,k,N/2,N/2)], dfield[INDEX(0,fld,k,N/2,N/2)]);
+            //fprintf(gravrhoslice,"%Le %Le %Le\n",dfdr(field,0,fld,N/2,N/2,k), field[INDEX(0,fld,N/2,N/2,k)], dfield[INDEX(0,fld,N/2,N/2,k)]);
             //fprintf(sourceslice,"%Le ", source(0,fld,k,N/2,N/2)+source2(0,fld,k,N/2,N/2));
         }
-        fprintf(slicefield, "\n");
+       // fprintf(slicefield, "\n");
         //fprintf(sourceslice, "\n");
         
         
     }
-    
+
 #endif
-    fclose(slicefield);
-    //fclose(energyslice);
-     //fclose(gravrhoslice);
-    //fclose(sourceslice);
+    //fclose(slicefield);
+    fclose(energyslice);
+    //fclose(gravrhoslice);
+    fclose(sourceslice);
 }
 
 
@@ -275,7 +316,6 @@ void outputslice()//externally called function for outputting the data from the 
     static int first=0;
     static int lastslice,lastspec;
     static int slicewaitm;
-    
     if(first==0)
     {
         if(slicewait==0)//determines number of steps to wait between each slice output based off of g2parameters.h
@@ -312,8 +352,8 @@ void outputslice()//externally called function for outputting the data from the 
 
 #if pow_output!=0
         modePowerOut(t,first,75);
-        modePowerOut(t,first,66);
-        modePowerOut(t,first,57);
+        modePowerOut(t,first,150);
+        modePowerOut(t,first,300);
 #endif     
         
         /*times file output */

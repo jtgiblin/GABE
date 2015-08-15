@@ -12,6 +12,20 @@
  Last Updated: 06.27.2013
 */
 
+/*************
+Run Parameters
+*************/
+
+const gIdx N = 600; //number of points along one side of grid PyVAR
+const gNum L = 100.; // length of one side of box in prgm units PyVAR
+const gNum omega = 0.142; // Radial velocity of source PyVAR
+const gNum rstar = 10.; //This is the size of the Vainshtein radius (where rb=2r_o) PyVAR
+const gNum alpha = 1.; // This is the ratio of the masses of the stars PyVAR
+const gNum bkgFld_BCSPH = -0.00151336978296; // PyWRITE
+const gNum sigma2 = 0.32; // Value of sigma-squared * 2 in the Gaussian energy density. 
+
+const gNum dx = L/((gNum) N);//stores the change in x from point to point
+
 /***************
  model constants
  ***************/
@@ -22,35 +36,40 @@
 const gNum f0[num_flds]={0.};//array storing initial h_{ij} field values
 const gNum df0[num_flds]={0.};//array storing initial h_{ij} field derivative values
 const gNum c=1.; //speed of light, shouldn't change, if you do, fix all equations
-const gNum omega = 0.142; // Radial velocity of source
-const gNum rstar =10.;//This is the size of the Vainshtein radius (where rb=2r_o)
-const gNum sigma2 = 0.32; // Value of sigma-squared * 2 in the Gaussian energy density. May not need this value if energy density is not gaussian or some other form.
-const gNum alpha = 1.; // This is the proportionality constant relating the energy densities of the two masses in binary. alpha = roh_2 / roh_1
-//R0 shall be assumed to stay constant
 
 #define galileon_order 3// 2 for linear 3 for cubic 4 for quartic eventually 5 for quintic
 //the following assume A=rb/2
 const gNum kappa = 2.*rstar*rstar*rstar/sqrtl((1.+alpha)*M_PI)/omega; //used in the Galileon EOM
 const gNum kappa2 = kappa*kappa; //Kappa-squared
 const gNum lambda = 8.*omega*sqrtl(M_PI/(1.+alpha));
+const gNum PNorm = 1./sqrtl(sigma2*sigma2*sigma2*M_PI*M_PI*M_PI); //Normalization constant for source terms
+
+
 /***************************
  model independent parameters
  ***************************/
 #define parallelize 1// for parallelization set to 1 and set other variables set to 0 for no parallelization
-#define tot_num_thrds 24//total (max) number of threads to run during program
+#define tot_num_thrds 23//total (max) number of threads to run during program
 const int randseed=44463132;//seed for rand number generator
-const gIdx N=150;//number of points along one side of grid
-const gNum L=25.;// length of one side of box in prgm units
 const gNum starttime=0.;//start time of simulation
-const gNum endtime=300.;//end time of simulations
-const gNum dt=0.001;//time step size
-#define int_order 2//integration order (2 or 4)
+const gNum endtime=1200.;//end time of simulations
+const gNum dt=0.01;//time step size
+#define int_order 3//integration order (2 or 4)
 #define expansion_type 0//(0 for no expansion 1 for evolving from adot 2 for user defined expansion 
 //(will need to adjust functions file (adot and such) and type two evolution in the step() function fnd g2init.cpp initexpansion() for user defined expansion )
 
 /*************************
  model dependent parameters
  *************************/
+
+
+ #if int_order==3
+const gNum rr=(N/2.-1/sqrtl(2))*dx;//Radius of BC
+const gNum beta= 9*M_PI*rr*rr*rr*rr + 32*rr*rstar*rstar*rstar;
+const gNum cs=2*sqrtl(beta/(3*beta - 6*sqrtl(beta)*sqrtl(M_PI)*rr*rr + 27*M_PI*rr*rr*rr*rr));
+const gNum dAbA=(-1/2. + (3*sqrtl(M_PI)*rr*rr)/(2.*sqrtl(beta)) - 
+   (24*M_PI*rr*rr*rr*rr)/(beta - 2*sqrtl(beta)*sqrtl(M_PI)*rr*rr + 9*M_PI*rr*rr*rr*rr))/sqrtl(rr*rr);
+#endif
 
 //const gNum rescale_B=lambda;//rescalings
 
@@ -63,7 +82,7 @@ const gNum dt=0.001;//time step size
  output parameters
  *****************/
 const gNum screentime=60;// in seconds how frequently output prgm time to screen
-const int slicewait=500;//how many dt's to wait between outputs (1 for no waiting) if 0 then slicenumber will be used.
+const int slicewait=100;//how many dt's to wait between outputs (1 for no waiting) if 0 then slicenumber will be used.
 const int slicenumber=1;//approx number of slices to output (only used if slicewait=0)
 const int field_sliceskip=1;//how many points to print in field profile (1 is every, 2 every two, 3 every three...)
 const int specnumber=1; //how many spectra to out put (1= every output slice 2 every two....)
@@ -79,11 +98,8 @@ const int specnumber=1; //how many spectra to out put (1= every output slice 2 e
  These are important DO NOT CHANGE
  *********************************/
 const int nflds=num_flds; //stores number of fields for looping
-const gNum dx=L/((gNum) N);//stores the change in x from point to point
 const gNum gridsize=N*N*N;//stores size of grid for averaging
 
-
-const gNum PNorm = 1./sqrtl(sigma2*sigma2*sigma2*M_PI*M_PI*M_PI); //Normalization constant for source terms
 
 #if parallelize!=1
 #undef tot_num_thrds
