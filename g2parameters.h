@@ -30,10 +30,11 @@ extern real_t c;      // speed of light, shouldn't change, if you do, fix all eq
  model independent parameters
  ***************************/
 const int randseed = 44463132; // seed for rand number generator
-const int N = 32;             // number of points along one side of grid
+const int N = 32;              // number of points along one side of grid
 const int NX = N;              // number of points along one side of grid
 const int NY = N;              // number of points along one side of grid
 const int NZ = N;              // number of points along one side of grid
+const int POINTS = NX*NY*NZ;   // total number of points
 extern real_t L;               // length of one side of box in prgm units
 extern real_t starttime;       // start time of simulation
 extern real_t endtime;         // end time of simulations
@@ -46,7 +47,7 @@ extern real_t dt;              // time step size
  model dependent parameters
  *************************/
 
-const long double rescale_B = mphi; // rescalings
+const real_t rescale_B = mphi; // rescalings
 
 #define rand_init 1               // 1 to have random initialization 0 to not (see model file)
 #define field_full_rand 1         // 1 to have full random 0 to have symmetric kspace initilaization
@@ -55,7 +56,7 @@ const long double rescale_B = mphi; // rescalings
  These are important DO NOT CHANGE
  *********************************/
 const int nflds = num_flds;                 // stores number of fields for looping
-const long double dx = L/((long double) N); // stores the change in x from point to point
-const long double gridsize = N*N*N;         // stores size of grid for averaging
+const real_t dx = L/((real_t) N); // stores the change in x from point to point
+const real_t gridsize = NX*NY*NZ;      // stores size of grid for averaging
 
 #endif

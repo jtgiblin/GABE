@@ -18,8 +18,8 @@
 #include "g2header.h"
 #include <iostream>
 
-real_t (*field)[nflds][NX][NY][NZ];  // this stores the field values for each step along the grid
-real_t (*dfield)[nflds][NX][NY][NZ]; // this stores the derivative of the field for each step along the grid
+real_t (*field)[nflds][POINTS];  // this stores the field values for each step along the grid
+real_t (*dfield)[nflds][POINTS]; // this stores the derivative of the field for each step along the grid
 real_t a[2];                         // this stores the scale facator for each step
 real_t adot[2];                      // this stores the time derivative of the scale factor
 real_t edpot[2];                     // this stores the average potential energy
@@ -47,10 +47,10 @@ real_t dt = 0.1;        // time step size
 void alloc()
 {
     //allocates memory for the fields
-    field = (real_t(*)[nflds][NX][NY][NZ]) malloc(sizeof(real_t)*nflds*2*NX*NY*NZ);
+    field = (real_t(*)[nflds][POINTS]) malloc(sizeof(real_t)*nflds*2*POINTS);
     
     //allocates memory for the fields' time derivatives
-    dfield = (real_t(*)[nflds][NX][NY][NZ]) malloc(sizeof(real_t)*nflds*2*NX*NY*NZ);
+    dfield = (real_t(*)[nflds][POINTS]) malloc(sizeof(real_t)*nflds*2*POINTS);
 }
 
 // Just initialize things. 

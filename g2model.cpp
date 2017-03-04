@@ -38,23 +38,23 @@ s*/
 #define COUP gsq/mphi/mphi //coupling term
 
 // user defined potential
-real_t potential(int s, int i, int j, int k)
+real_t potential(int s, int idx)
 {
-    return (0.5*PHI[i][j][k]*PHI[i][j][k]
-        + 0.5*COUP*PHI[i][j][k]*PHI[i][j][k]*CHI[i][j][k]*CHI[i][j][k]);
+    return (0.5*PHI[idx]*PHI[idx]
+        + 0.5*COUP*PHI[idx]*PHI[idx]*CHI[idx]*CHI[idx]);
 }
 
 // user defined derivative of the potential
-real_t dVdf(int s, int fld, int i, int j, int k)
+real_t dVdf(int s, int fld, int idx)
 
 {
     switch (fld) {
         case 0:
             //derivative with respect to phi
-            return (PHI[i][j][k] + COUP*CHI[i][j][k]*CHI[i][j][k]*PHI[i][j][k]);
+            return (PHI[idx] + COUP*CHI[idx]*CHI[idx]*PHI[idx]);
         case 1:
             //derivative with respect to chi
-            return (COUP*PHI[i][j][k]*PHI[i][j][k]*CHI[i][j][k]);
+            return (COUP*PHI[idx]*PHI[idx]*CHI[idx]);
         default:
             return 0;
     }
@@ -65,16 +65,17 @@ real_t dVdf(int s, int fld, int i, int j, int k)
 inline real_t effMass(int s, int fld)
 {
     real_t avemass=0.;
-    int i,j,k;
     switch (fld) {
         case 0:
-            LOOP{
-                avemass += (1. + COUP*CHI[i][j][k]*CHI[i][j][k]);
+            for(int p=0; p<POINTS; p++)
+            {
+                avemass += (1. + COUP*CHI[p]*CHI[p]);
             }
             return avemass/gridsize;
         case 1:
-            LOOP{
-                avemass += (COUP*PHI[i][j][k]*PHI[i][j][k]);
+            for(int p=0; p<POINTS; p++)
+            {
+                avemass += (COUP*PHI[p]*PHI[p]);
             }
             return avemass/gridsize;
         default:
@@ -98,10 +99,11 @@ void initfields()
     if(first==0)
     {
         //loops over fld i,j,k
-        fldLOOP
+        for(int fld=0; fld<nflds; fld++)
+            for(int p=0; p<POINTS; p++)
         {
-            field[s][fld][i][j][k]=f0[fld]; // initialize each field as its initial value
-            dfield[s][fld][i][j][k]=df0[fld]; // initialize each field derivative as its initial value
+            field[s][fld][p] = f0[fld]; // initialize each field as its initial value
+            dfield[s][fld][p] = df0[fld]; // initialize each field derivative as its initial value
         }
     }
     
