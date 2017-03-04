@@ -89,7 +89,7 @@ real_t avgGrad(int s)
     fldLOOP
     {
         // sums the gradient energy at each point
-        grad+=gradF2(field[s][fld],i,j,k);
+        grad+=gradF2(field[FIELD(s,fld)],i,j,k);
     }
 
     // divides by the gridsize (to normalize) and 1/(2a^2) to get the gradient energy density
@@ -123,7 +123,7 @@ real_t avgKin(int s)
         for(int p=0; p<POINTS; p++)
     {
         //sums the square field derivative at every point
-        kin += dfield[s][fld][p]*dfield[s][fld][p];
+        kin += dfield[FIELD(s,fld)][p]*dfield[FIELD(s,fld)][p];
     }
     // divide by the grid size to get the average and 2
     return kin/gridsize/2.;
@@ -148,8 +148,8 @@ real_t adf(int s)
 real_t ddfield( int s, int fld, int i, int j, int k)
 {
     int idx = IDX(i,j,k);
-    return laplacian(field[s][fld],i,j,k)/a[s]/a[s]
-        - dVdf(s,fld,idx) - 3*adot[s]/a[s]*dfield[s][fld][idx];
+    return laplacian(field[FIELD(s,fld)],i,j,k)/a[s]/a[s]
+        - dVdf(s,fld,idx) - 3*adot[s]/a[s]*dfield[FIELD(s,fld)][idx];
 }
 
 
@@ -164,35 +164,35 @@ void step()
     // the first part of the RK2 step
     for(fld=0; fld<nflds; fld++)
     {
-        // loops over fld i,j,k
+        int flds0 = FIELD(0,fld);
+        int flds1 = FIELD(1,fld);
         for(int p=0; p<POINTS; p++)
-            field[1][fld][p] = field[0][fld][p] + .5*dt*dfield[0][fld][p];
-    }
-    for(fld=0; fld<nflds; fld++)
-    {
+        {
+            field[flds1][p] = field[flds0][p] + .5*dt*dfield[flds0][p];
+        }
         // loops over fld i,j,k
         LOOP
         {
             int idx = IDX(i,j,k);
-            dfield[1][fld][idx] = dfield[0][fld][idx] + .5*dt*ddfield(0,fld,i,j,k);
+            dfield[flds1][idx] = dfield[flds0][idx] + .5*dt*ddfield(0,fld,i,j,k);
         }
     }
 
 
-    // the second part of the RK2 step 
+    // the second part of the RK2 step
+    // This computes the actual value of the field and derivative at t
     for(fld=0; fld<nflds; fld++)
     {
-        // This returns the actual value of the field and derivative at t
+        int flds0 = FIELD(0,fld);
+        int flds1 = FIELD(1,fld);
         for(int p=0; p<POINTS; p++)
-            field[0][fld][p] = field[0][fld][p] + dt*dfield[1][fld][p];
-    }
-    for(fld=0; fld<nflds; fld++)
-    {
-        // This returns the actual value of the field and derivative at t
+        {
+            field[flds0][p] = field[flds0][p] + dt*dfield[flds1][p];
+        }
         LOOP
         {
             int idx = IDX(i,j,k);
-            dfield[0][fld][idx] = dfield[0][fld][idx] + dt*ddfield(1,fld,i,j,k);
+            dfield[flds0][idx] = dfield[flds0][idx] + dt*ddfield(1,fld,i,j,k);
         }
     }
 

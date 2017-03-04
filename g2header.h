@@ -44,6 +44,7 @@ LOOP DEFINITIONS
 
 // Indexing macro for arrays
 #define IDX(i,j,k) ((i)*NY*NZ + (j)*NZ + k)
+#define FIELD(s,fld) ((fld)*2 + (s))
 
 #include "g2parameters.h"
 //this is the include statement for the parameters file
@@ -53,8 +54,8 @@ LOOP DEFINITIONS
  ******************************/
 extern real_t t;                          // this is the variable that stores the evolution time
 
-extern real_t (* field)[nflds][POINTS];  // this stores the field values for each step along the grid
-extern real_t (* dfield)[nflds][POINTS]; // this stores the derivative of the field for each step along the grid
+extern real_t ** field;  // this stores the field values for each step along the grid
+extern real_t ** dfield; // this stores the derivative of the field for each step along the grid
 
 //The following are all arrays of length two, one for each step of the RK2 integration
 extern real_t a[2];      // this stores the scale facator for each step

@@ -30,10 +30,10 @@ s*/
 /***************************
  user defined model functions
  ***************************/
-#define PHI field[s][0]
-#define CHI field[s][1]
-#define PHIDOT dfield[s][0]
-#define CHIDOT dfield[s][1]
+#define PHI field[FIELD(s,0)]
+#define CHI field[FIELD(s,1)]
+#define PHIDOT dfield[FIELD(s,0)]
+#define CHIDOT dfield[FIELD(s,1)]
 
 #define COUP gsq/mphi/mphi //coupling term
 
@@ -58,7 +58,6 @@ real_t dVdf(int s, int fld, int idx)
         default:
             return 0;
     }
-
 }
 
 // the effective mass used for random inital conditions
@@ -102,8 +101,8 @@ void initfields()
         for(int fld=0; fld<nflds; fld++)
             for(int p=0; p<POINTS; p++)
         {
-            field[s][fld][p] = f0[fld]; // initialize each field as its initial value
-            dfield[s][fld][p] = df0[fld]; // initialize each field derivative as its initial value
+            field[FIELD(s,fld)][p] = f0[fld]; // initialize each field as its initial value
+            dfield[FIELD(s,fld)][p] = df0[fld]; // initialize each field derivative as its initial value
         }
     }
     

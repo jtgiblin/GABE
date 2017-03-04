@@ -1,14 +1,14 @@
-COMPILER = g++
-OFLAG = -O3
-FLAGS = -m64 -g $(OFLAG)
-LINKS= -L/opt/local/lib
+COMPILER = em++
+OFLAG = -ffast-math -O3 -flto -march=native
+FLAGS = -m64 -g -std=c++11 $(OFLAG)
+LINKS = -L/opt/local/lib
 
 do: fclean dirmake oclean compile 
 
 xcmake : do
 	
 compile: g2header.h g2parameters.h g2model.o g2functions.o g2main.o g2init.o 
-	$(COMPILER) $(FLAGS) g2model.o g2functions.o g2init.o g2main.o $(LINKS) -o gabe
+	$(COMPILER) $(FLAGS) g2model.o g2functions.o g2init.o g2main.o $(LINKS) -o gabe.js
 
 clean : fclean oclean
 
@@ -34,7 +34,6 @@ fclean:
 	
 dirmake:
 	@ if test -d slices; then echo directory "'slices'" exists; else mkdir slices; echo made directory "'slices'"; fi	
-
 
 run: clean compile
 	./gabe

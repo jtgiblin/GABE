@@ -23,7 +23,7 @@ void initexpansion()
     calcEnergy(0);
 }
 
-void randInit(real_t f[][N][N], real_t df[][N][N], real_t d2vdf2)
+void randInit(real_t * f, real_t * df, real_t d2vdf2)
 {
     // TODO: initialize something
 }

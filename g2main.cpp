@@ -16,10 +16,7 @@
 
 //contains all the parameters, changable and unchangeable
 #include "g2header.h"
-#include <iostream>
 
-real_t (*field)[nflds][POINTS];  // this stores the field values for each step along the grid
-real_t (*dfield)[nflds][POINTS]; // this stores the derivative of the field for each step along the grid
 real_t a[2];                         // this stores the scale facator for each step
 real_t adot[2];                      // this stores the time derivative of the scale factor
 real_t edpot[2];                     // this stores the average potential energy
@@ -41,16 +38,30 @@ real_t L = 20.;         //  length of one side of box in prgm units
 real_t starttime = 0.;  // start time of simulation
 real_t endtime = 10.;   // end time of simulations
 real_t dt = 0.1;        // time step size
+int NX = 32;
+int NY = 32;
+int NZ = 32;
+int POINTS = NX*NY*NZ;
+real_t dx = L/((real_t) NX);   // stores the change in x from point to point
+real_t gridsize = NX*NY*NZ;   // stores size of grid for averaging
 
+real_t ** field;      // this stores the field values for each step along the grid
+real_t ** dfield;     // this stores the derivative of the field for each step along the grid
 
 // Allocate space for fields. Other functions will be called via javascript.
 void alloc()
 {
-    //allocates memory for the fields
-    field = (real_t(*)[nflds][POINTS]) malloc(sizeof(real_t)*nflds*2*POINTS);
-    
-    //allocates memory for the fields' time derivatives
-    dfield = (real_t(*)[nflds][POINTS]) malloc(sizeof(real_t)*nflds*2*POINTS);
+    field = (real_t **) malloc(sizeof(real_t*)*2*nflds);
+    dfield = (real_t **) malloc(sizeof(real_t*)*2*nflds);
+
+    for (int f=0; f<2*nflds; f++)
+    {
+        //allocates memory for the fields
+        field[f] = (real_t *) malloc(sizeof(real_t)*POINTS);
+
+        //allocates memory for the fields' time derivatives
+        dfield[f] = (real_t *) malloc(sizeof(real_t)*POINTS);
+    }
 }
 
 // Just initialize things. 
