@@ -1,4 +1,4 @@
-COMPILER = em++
+COMPILER = g++
 OFLAG = -O3
 FLAGS = -m64 -g $(OFLAG)
 LINKS= -L/opt/local/lib
@@ -28,7 +28,7 @@ g2init.o: g2header.h g2parameters.h g2init.cpp
 	$(COMPILER) -c $(FLAGS)  g2init.cpp
 
 oclean: 
-	rm -f *.o 
+	rm -f *.o *.js
 
 fclean:
 #	rm -r gabe2_0.dSYM

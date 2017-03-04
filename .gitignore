@@ -6,6 +6,8 @@ slices/*
 gabe
 info.txt
 
+# emscripten output
+*.js
 
 # Generic stuff
 

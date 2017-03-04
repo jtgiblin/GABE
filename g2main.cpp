@@ -16,9 +16,8 @@
 
 //contains all the parameters, changable and unchangeable
 #include "g2header.h"
+#include <iostream>
 
-
-real_t t = starttime;                // this is the variable that stores the time
 real_t (*field)[nflds][NX][NY][NZ];  // this stores the field values for each step along the grid
 real_t (*dfield)[nflds][NX][NY][NZ]; // this stores the derivative of the field for each step along the grid
 real_t a[2];                         // this stores the scale facator for each step
@@ -40,8 +39,8 @@ real_t c = 1.;                  // speed of light, shouldn't change, if you do, 
 // values of model-independent parameters from g2parameters.h
 real_t L = 20.;         //  length of one side of box in prgm units
 real_t starttime = 0.;  // start time of simulation
-real_t endtime = 100.;  // end time of simulations
-real_t dt = 0.01;       // time step size
+real_t endtime = 10.;   // end time of simulations
+real_t dt = 0.1;        // time step size
 
 
 // Allocate space for fields. Other functions will be called via javascript.
@@ -61,6 +60,22 @@ void init()
     initfields(); //initializes fields as defined in model.h
     initexpansion(); //start expansion;
     initfields(); //do fluctuations
+}
+
+int main()
+{
+    alloc();
+    init();
+    
+    // This is the main for-loop over time.
+    // Note that the current t value is the time for the currently evaluated fields
+    for(real_t t=starttime; t<=endtime; t+=dt)
+    {
+        // evolves the fields one step
+        step();
+    }
+
+    return 0;
 }
 
 #ifdef EMSCRIPTEN_BINDINGS

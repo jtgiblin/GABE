@@ -30,7 +30,7 @@ extern real_t c;      // speed of light, shouldn't change, if you do, fix all eq
  model independent parameters
  ***************************/
 const int randseed = 44463132; // seed for rand number generator
-const int N = 128;             // number of points along one side of grid
+const int N = 32;             // number of points along one side of grid
 const int NX = N;              // number of points along one side of grid
 const int NY = N;              // number of points along one side of grid
 const int NZ = N;              // number of points along one side of grid
@@ -46,7 +46,7 @@ extern real_t dt;              // time step size
  model dependent parameters
  *************************/
 
-const long double rescale_B = mphi; // rescallings
+const long double rescale_B = mphi; // rescalings
 
 #define rand_init 1               // 1 to have random initialization 0 to not (see model file)
 #define field_full_rand 1         // 1 to have full random 0 to have symmetric kspace initilaization
