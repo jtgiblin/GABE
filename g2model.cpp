@@ -94,23 +94,16 @@ void initfields()
 {
     static int first=0,s=0;
     DECLARE_INDEX
-    
-    if(first==0)
+
+    //loops over fld i,j,k
+    for(int fld=0; fld<nflds; fld++)
+    LOOP
     {
-        //loops over fld i,j,k
-        for(int fld=0; fld<nflds; fld++)
-            for(int p=0; p<POINTS; p++)
-        {
-            field[FIELD(s,fld)][p] = f0[fld]; // initialize each field as its initial value
-            dfield[FIELD(s,fld)][p] = df0[fld]; // initialize each field derivative as its initial value
-        }
+        int idx = IDX(i,j,k);
+        field[FIELD(s,fld)][idx] = f0[fld] + 0.01*sin(2.0*3.14159*j/NY); // initialize each field as its initial value
+        dfield[FIELD(s,fld)][idx] = df0[fld]; // initialize each field derivative as its initial value
     }
-    
-    if(first==1)
-    {
-        // Any other model specific initialization can go here -- i.e. Bubbles, etc
-    }
-    
+        
     calcEnergy(0); //This is important -- needed for first step of evolution
 
     first++;

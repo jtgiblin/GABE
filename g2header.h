@@ -18,11 +18,6 @@
 #include <string>
 #include <unistd.h>
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten/bind.h> // for emscripten!
-using namespace emscripten;
-#endif
-
 typedef float real_t; // type used for simulation
 
 //this is a directive to declare all the common indecies for the fields
@@ -70,14 +65,8 @@ extern real_t edrho[2];  // this stores the avg. energy density over the box
 Main file Header
  ***********************/
 
-// allocate memory for fields
-void alloc();
-
-// initialize fields
-void init();
-
-// resize grid
-void resize_grid(int nx, int ny, int nz);
+// (re-)allocate memory for and initialize fields
+void init(int nx, int ny, int nz);
 
 /***********************
 Initialization Header
@@ -87,14 +76,8 @@ Initialization Header
 // initializes all of the energy densities and scale factor as appropriet for the begining of the run
 void initexpansion();
 
-// Allocates the memory for the dft for moving the random intialization in momentum space to configuration space
-void dftMemAlloc();
-
 // function which initializes the random conditions for fields f and df
-void randInit( real_t * f, real_t * df, real_t d2vdf2);
-
-//destroys the fftw extra stuffs needed only durring intialization
-void initDestroy();
+void zeroInit( real_t * f, real_t * df );
 
 
 /************

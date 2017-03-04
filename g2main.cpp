@@ -16,6 +16,9 @@
 
 //contains all the parameters, changable and unchangeable
 #include "g2header.h"
+#ifndef __EMSCRIPTEN__
+#include <iostream>
+#endif
 
 real_t a[2];                         // this stores the scale facator for each step
 real_t adot[2];                      // this stores the time derivative of the scale factor
@@ -47,13 +50,30 @@ real_t gridsize = NX*NY*NZ;   // stores size of grid for averaging
 
 real_t ** field;      // this stores the field values for each step along the grid
 real_t ** dfield;     // this stores the derivative of the field for each step along the grid
+bool fields_are_allocated = false;
 
-// Allocate space for fields. Other functions will be called via javascript.
-void alloc()
+// initialize things. 
+// Steps should be called separately.
+void init(int nx, int ny, int nz)
 {
+    // allocate memory for fields
+    NX = nx; NY = ny; NZ = nz;
+    POINTS = gridsize = NX*NY*NZ;
+    dx = L/((real_t) NX);
+
+    if(fields_are_allocated)
+    {
+        for (int f=0; f<2*nflds; f++)
+        {
+            free(field[f]);
+            free(dfield[f]);
+        }
+        free(field);
+        free(dfield);
+    }
+
     field = (real_t **) malloc(sizeof(real_t*)*2*nflds);
     dfield = (real_t **) malloc(sizeof(real_t*)*2*nflds);
-
     for (int f=0; f<2*nflds; f++)
     {
         //allocates memory for the fields
@@ -62,72 +82,62 @@ void alloc()
         //allocates memory for the fields' time derivatives
         dfield[f] = (real_t *) malloc(sizeof(real_t)*POINTS);
     }
+    fields_are_allocated = true;
+
+    // initializes fields as defined in model.h
+    initfields();
+    // start expansion;
+    initexpansion();
+    // do fluctuations
+    initfields();
 }
 
-// Just initialize things. 
-// Steps will be called separately (by javascript routines).
-void init()
-{
-    initfields(); //initializes fields as defined in model.h
-    initexpansion(); //start expansion;
-    initfields(); //do fluctuations
-}
-
-void resize_grid(int nx, int ny, int nz)
-{
-    NX = nx; NY = ny; NZ = nz;
-    POINTS = gridsize = NX*NY*NZ;
-    dx = L/((real_t) NX);
-
-    field = (real_t **) malloc(sizeof(real_t*)*2*nflds);
-    dfield = (real_t **) malloc(sizeof(real_t*)*2*nflds);
-
-    for (int f=0; f<2*nflds; f++)
-    {
-        free(field[f]);
-        free(dfield[f]);
-    }
-    free(field);
-    free(dfield);
-
-    alloc();
-    init();
-}
-
+#ifndef __EMSCRIPTEN__
 int main()
 {
-    alloc();
-    init();
-    
-#   ifndef __EMSCRIPTEN__
+    std::cout << "Initializing...\n";
+    init(NX, NY, NZ);
+    std::cout << "field[0][0] = " << field[0][0] << ".\n";
+
     // This is the main for-loop over time.
     // Note that the current t value is the time for the currently evaluated fields
     for(real_t t=starttime; t<=endtime; t+=dt)
     {
         // evolves the fields one step
         step();
+        std::cout << "Running step @ t=" << t << "\r";
     }
-#   endif
+    std::cout << "\nDone running steps! Ending simulation.\n";
+    std::cout << "field[0][0] = " << field[0][0] << ".\n";
 
     return 0;
 }
+#endif
 
-int tmptst(int a)
-{
-    return a*2;
-}
-
-real_t * get_fld(int fld)
-{
-    return field[FIELD(0,fld)];
-}
 
 #ifdef __EMSCRIPTEN__
-EMSCRIPTEN_BINDINGS(my_module) {
-    function("init", &init);
-    function("alloc", &alloc);
-    function("resize_grid", &resize_grid);
-    function("tmptst", &tmptst);
-    // function("get_fld", &get_fld); // doesn't work...
+extern "C"
+{
+    int copyout_fld(int fld, real_t * outfld, int length)
+    {
+        int loop_limit = length < POINTS ? length : POINTS;
+        for(int p=0; p<loop_limit; ++p)
+            outfld[p] = field[FIELD(0,fld)][p];
+
+        return 7;
+    }
+
+    int sim_init(int nx, int ny, int nz)
+    {
+        init(nx, ny, nz);
+        return 7;
+    }
+
+    int sim_step()
+    {
+        step();
+        return 7;
+    }
 }
+
 #endif

@@ -1,14 +1,16 @@
 COMPILER = em++
-OFLAG = -ffast-math -O3 -flto
-FLAGS = --std=c++11 --bind $(OFLAG)
+OFLAG = -O3 -ffast-math -flto
+FNS = -s EXPORTED_FUNCTIONS="['_copyout_fld','_sim_init','_sim_step']"
+FLAGS = --std=c++11 -s NO_EXIT_RUNTIME=1 $(OFLAG) $(FNS)
 LINKS = -L/opt/local/lib
+OUTFILE = gabe.js
 
-do: oclean compile 
+do: oclean compile
 
 xcmake : do
 	
 compile: g2header.h g2parameters.h g2model.o g2functions.o g2main.o g2init.o 
-	$(COMPILER) $(FLAGS) g2model.o g2functions.o g2init.o g2main.o $(LINKS) -o gabe.js
+	$(COMPILER) $(FLAGS) g2model.o g2functions.o g2init.o g2main.o $(LINKS) -o $(OUTFILE)
 
 clean : oclean
 

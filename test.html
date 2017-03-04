@@ -2,16 +2,105 @@
 <html>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="gabe.js"></script>
   </head>
 
   <body>
     <script type="text/javascript">
-      function myTest(){
-        console.log( Module.tmptst(5) ); 
+
+      function getField(nx, ny, nz)
+      {
+        copyout_fld = Module.cwrap(
+          'copyout_fld', 'number', ['number', 'number', 'number']
+        );
+
+        var fld = new Float32Array(new Array(nx*ny*nz).fill(0));
+
+        var nDataBytes = fld.length * fld.BYTES_PER_ELEMENT;
+        var dataPtr = Module._malloc(nDataBytes);
+        var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
+        dataHeap.set(new Uint8Array(fld.buffer));
+
+        copyout_fld(0, dataHeap.byteOffset, fld.length);
+        var result = new Float32Array(dataHeap.buffer, dataHeap.byteOffset, fld.length);
+
+        Module._free(dataHeap.byteOffset);
+        return result;
       }
+
+      function simInit()
+      {
+        sim_init = Module.cwrap(
+          'sim_init', 'number',
+          ['number', 'number', 'number']
+        );
+        var msg = sim_init(16, 16, 16);
+        if(msg == 7) {
+          document.getElementById("output").innerHTML += "Simulation initialized!\n";
+        } else {
+          document.getElementById("output").innerHTML += "Error initializing sim!\n";
+        }
+        return msg;
+      }
+
+      function runStep()
+      {
+         sim_step = Module.cwrap(
+          'sim_step', 'number',
+          ['number', 'number', 'number']
+        );
+        var msg = sim_step();
+        if(msg == 7) {
+          document.getElementById("output").innerHTML += "Simulation step run!\n";
+        } else {
+          document.getElementById("output").innerHTML += "Error running sim step!\n";
+        }
+        return msg;
+      }
+
+      function plotResults()
+      {
+        var data = getField(16, 16, 16);
+
+        // get a 2-d slice of data
+        var z_data = [];
+        for(i=0;i<16;i++) {
+          z_data[i] = [];
+          for(j=0;j<16;j++) {
+            z_data[i][j] = data[i*16 + j];
+          }
+        }
+
+        var plot_data = [{
+           z: z_data,
+           type: 'surface'
+        }];
+
+        var layout = {
+          title: 'Simulation data',
+          autosize: false,
+          width: 500,
+          height: 500,
+          margin: {
+            l: 65,
+            r: 50,
+            b: 65,
+            t: 90,
+          }
+        };
+
+        Plotly.newPlot('myDiv', plot_data, layout);
+      }
+
     </script>
-    <input type='button' onclick="javascript:myTest();" value='click' />
+    <input type='button' onclick="javascript:simInit();" value='1) Initialize a 16^3 Simulation' />
+    <input type='button' onclick="javascript:runStep();" value='2) Run a Step' />
+    <input type='button' onclick="javascript:plotResults();" value='3) Plot Results' />
+    <br />
+    <br />
+    <textarea rows="10" cols="50" id="output" disabled="disabled"></textarea>
+    <div id="myDiv"></div>
   </body>
 
 </html>

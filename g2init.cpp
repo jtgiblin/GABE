@@ -23,7 +23,14 @@ void initexpansion()
     calcEnergy(0);
 }
 
-void randInit(real_t * f, real_t * df, real_t d2vdf2)
+void zeroInit(real_t * f, real_t * df)
 {
-    // TODO: initialize something
+    DECLARE_INDEX
+
+    LOOP
+    {
+        int idx = IDX(i,j,k);
+        f[idx] = 0;
+        df[idx] = 0;
+    }
 }
