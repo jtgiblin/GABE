@@ -18,7 +18,7 @@
 #include <string>
 #include <unistd.h>
 
-#ifdef EMSCRIPTEN_BINDINGS
+#ifdef __EMSCRIPTEN__
 #include <emscripten/bind.h> // for emscripten!
 using namespace emscripten;
 #endif
@@ -75,6 +75,9 @@ void alloc();
 
 // initialize fields
 void init();
+
+// resize grid
+void resize_grid(int nx, int ny, int nz);
 
 /***********************
 Initialization Header

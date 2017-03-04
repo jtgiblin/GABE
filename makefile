@@ -1,16 +1,16 @@
 COMPILER = em++
-OFLAG = -ffast-math -O3 -flto -march=native
-FLAGS = -m64 -g -std=c++11 $(OFLAG)
+OFLAG = -ffast-math -O3 -flto
+FLAGS = --std=c++11 --bind $(OFLAG)
 LINKS = -L/opt/local/lib
 
-do: fclean dirmake oclean compile 
+do: oclean compile 
 
 xcmake : do
 	
 compile: g2header.h g2parameters.h g2model.o g2functions.o g2main.o g2init.o 
 	$(COMPILER) $(FLAGS) g2model.o g2functions.o g2init.o g2main.o $(LINKS) -o gabe.js
 
-clean : fclean oclean
+clean : oclean
 
 g2main.o: g2header.h g2parameters.h g2main.cpp
 	$(COMPILER) -c $(FLAGS)  g2main.cpp
@@ -25,15 +25,4 @@ g2init.o: g2header.h g2parameters.h g2init.cpp
 	$(COMPILER) -c $(FLAGS)  g2init.cpp
 
 oclean: 
-	rm -f *.o *.js
-
-fclean:
-#	rm -r gabe2_0.dSYM
-	rm -f gabe2_0 *.dat *.txt
-	rm -f ./slices/*.dat
-	
-dirmake:
-	@ if test -d slices; then echo directory "'slices'" exists; else mkdir slices; echo made directory "'slices'"; fi	
-
-run: clean compile
-	./gabe
+	rm -f *.o *.js *.js.mem

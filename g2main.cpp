@@ -73,11 +73,33 @@ void init()
     initfields(); //do fluctuations
 }
 
+void resize_grid(int nx, int ny, int nz)
+{
+    NX = nx; NY = ny; NZ = nz;
+    POINTS = gridsize = NX*NY*NZ;
+    dx = L/((real_t) NX);
+
+    field = (real_t **) malloc(sizeof(real_t*)*2*nflds);
+    dfield = (real_t **) malloc(sizeof(real_t*)*2*nflds);
+
+    for (int f=0; f<2*nflds; f++)
+    {
+        free(field[f]);
+        free(dfield[f]);
+    }
+    free(field);
+    free(dfield);
+
+    alloc();
+    init();
+}
+
 int main()
 {
     alloc();
     init();
     
+#   ifndef __EMSCRIPTEN__
     // This is the main for-loop over time.
     // Note that the current t value is the time for the currently evaluated fields
     for(real_t t=starttime; t<=endtime; t+=dt)
@@ -85,13 +107,27 @@ int main()
         // evolves the fields one step
         step();
     }
+#   endif
 
     return 0;
 }
 
-#ifdef EMSCRIPTEN_BINDINGS
+int tmptst(int a)
+{
+    return a*2;
+}
+
+real_t * get_fld(int fld)
+{
+    return field[FIELD(0,fld)];
+}
+
+#ifdef __EMSCRIPTEN__
 EMSCRIPTEN_BINDINGS(my_module) {
     function("init", &init);
     function("alloc", &alloc);
+    function("resize_grid", &resize_grid);
+    function("tmptst", &tmptst);
+    // function("get_fld", &get_fld); // doesn't work...
 }
 #endif
