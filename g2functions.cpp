@@ -14,7 +14,7 @@
 
 #include "g2header.h" //contains declerations for program functions.
 
-long double pw2(long double x)//squares long doubles
+real_t pw2(real_t x)//squares real_ts
 {
     return x*x;
 }
@@ -29,12 +29,10 @@ inline int decr(int i)//for periodic boundaries
     return i==0? N-1: i-1;
 }
 
-/** Laplacian Functions **/
 
-
-long double laplacian(long double f[][N][N], int i, int j, int k)//this calculates the seven point laplacian 
+/** Laplacian Function **/
+real_t laplacian(real_t f[][N][N], int i, int j, int k)//this calculates the seven point laplacian 
 {
-    
     return (f[incr(i)][j][k]+f[decr(i)][j][k]
             +f[i][incr(j)][k]+f[i][decr(j)][k]
             +f[i][j][incr(k)]+f[i][j][decr(k)]
@@ -42,29 +40,29 @@ long double laplacian(long double f[][N][N], int i, int j, int k)//this calculat
     
 }
 
-/** Spatial Derivative Functions **/
-/*
-The following fucntions are used to calculate the gradient energy of the field only; but they can also be implemented if derivative couplings are desired*/
+/** Spatial Derivative Functions
+ * The following fucntions are used to calculate the gradient energy of the
+ * field only; but they can also be used if derivative couplings are desired
+ */
 
-//If you know which partial derivative you need
-
-long double dfdi(long double f[][N][N], int i, int j, int k)// spatial derivative of the field f in i (x) direction direction
+// If you know which partial derivative you need
+real_t dfdi(real_t f[][N][N], int i, int j, int k)// spatial derivative of the field f in i (x) direction direction
 {
     return (f[incr(i)][j][k]-f[decr(i)][j][k])/2./dx;
 }
 
-long double dfdj(long double f[][N][N], int i, int j, int k)// spatial derivative of the field f in j (y) direction
+real_t dfdj(real_t f[][N][N], int i, int j, int k)// spatial derivative of the field f in j (y) direction
 {
     return (f[i][incr(j)][k]-f[i][decr(j)][k])/2./dx;
 }
 
-long double dfdk(long double f[][N][N], int i, int j, int k)// spatial derivative of the field f in k (z) direction
+real_t dfdk(real_t f[][N][N], int i, int j, int k)// spatial derivative of the field f in k (z) direction
 {
     return (f[i][j][incr(k)]-f[i][j][decr(k)])/2./dx;
 }
 
-//If you want to loop over spatial derivatives this form is somewhat more convienent
-long double dfdx(long double f[][N][N], int x, int i, int j, int k)//spatial derivative of the field f in the "x" direction.
+// If you want to loop over spatial derivatives this form is somewhat more convienent
+real_t dfdx(real_t f[][N][N], int x, int i, int j, int k)//spatial derivative of the field f in the "x" direction.
 {
     switch (x)
     {
@@ -81,15 +79,15 @@ long double dfdx(long double f[][N][N], int x, int i, int j, int k)//spatial der
 
 /**Functions needed for self-consistent expansion**/
 
-long double gradF2(long double f[][N][N],int i,int j,int k){
+real_t gradF2(real_t f[][N][N],int i,int j,int k){
     
     return  dfdi(f,i,j,k)*dfdi(f,i,j,k)+dfdj(f,i,j,k)*dfdj(f,i,j,k)+dfdk(f,i,j,k)*dfdk(f,i,j,k);//this is the unscaled gradient fo the field at the point i,j,k
     
 }
 
-long double avgGrad(int s) //Find the average gradient energy
+real_t avgGrad(int s) //Find the average gradient energy
 {
-    long double grad=0;
+    real_t grad=0;
     DECLARE_INDEX
     for(fld=0; fld<nflds; fld++){
 #pragma omp parallel for private (j,k) reduction(+:grad) num_threads (tot_num_thrds)
@@ -102,9 +100,9 @@ long double avgGrad(int s) //Find the average gradient energy
 }
 
 
-long double avgPot(int s) //Find the average potential energy
+real_t avgPot(int s) //Find the average potential energy
 {
-    long double pot=0;
+    real_t pot=0;
     DECLARE_INDEX
     #pragma omp parallel for private (j,k) reduction(+:pot) num_threads (tot_num_thrds)
         LOOP//loops over i,j,k
@@ -116,9 +114,9 @@ long double avgPot(int s) //Find the average potential energy
 }
 
 
-long double avgKin(int s) //Find the average kinetic energy
+real_t avgKin(int s) //Find the average kinetic energy
 {
-    long double kin=0;
+    real_t kin=0;
     DECLARE_INDEX
     for(fld=0; fld<nflds; fld++){
 #pragma omp parallel for private (j,k) reduction(+:kin) num_threads (tot_num_thrds)
@@ -139,12 +137,12 @@ void calcEnergy(int s) //Calculate the total energy
     edrho[s]=edkin[s]+edpot[s]+edgrad[s];
 }
 
-long double adf(int s)//the friedman equation
+real_t adf(int s)//the friedman equation
 {
     return sqrt(8.*M_PI*grav/3.*edrho[s])*a[s];
 }
 
-long double ddfield( int s, int fld, int i, int j, int k)//evaluates the double time derivative of the field fld (s) at i,j,k.
+real_t ddfield( int s, int fld, int i, int j, int k)//evaluates the double time derivative of the field fld (s) at i,j,k.
 {
    return laplacian(field[s][fld],i,j,k)/a[s]/a[s] - dVdf(s,fld,i,j,k) - 3*adot[s]/a[s]*dfield[s][fld][i][j][k];
 }

@@ -2,11 +2,7 @@
  LatticeSolve Main File
  ****************************/
 
-/*
- This is the .cpp file that contains the main function for the GABE2.0 program. 
- In this function the looping over time occurs aswell as the calls to the output functions and the initialize function. 
- Also all the header calls and macro definitions are made in this file.
- 
+/* 
  Copyright (2013): 
  Kenyon College
  John T. Giblin, Jr
@@ -17,68 +13,59 @@
 /*********************
  GABE Header
  *********************/
- //contains all the parameters, changable and unchangeable
-#include "g2header.h" //contains declerations for program functions and parameters file
+
+//contains all the parameters, changable and unchangeable
+#include "g2header.h"
 
 
-long double t=starttime;//this is the variable that stores the time
-long double (*field)[nflds][N][N][N];//this stores the field values for each step along the grid
-long double (*dfield)[nflds][N][N][N];//this stores the derivative of the field for each step along the grid
-long double a[2];//this stores the scale facator for each step
-long double adot[2];// this stores the time derivative of the scale factor
-long double edpot[2]; //this stores the average potential energy
-long double edkin[2]; //this stores the average kinetic energy
-long double edgrad[2]; //this stores the average gradient energy
-long double edrho[2]; // this stores the avg. energy density over the box
+real_t t = starttime;                // this is the variable that stores the time
+real_t (*field)[nflds][NX][NY][NZ];  // this stores the field values for each step along the grid
+real_t (*dfield)[nflds][NX][NY][NZ]; // this stores the derivative of the field for each step along the grid
+real_t a[2];                         // this stores the scale facator for each step
+real_t adot[2];                      // this stores the time derivative of the scale factor
+real_t edpot[2];                     // this stores the average potential energy
+real_t edkin[2];                     // this stores the average kinetic energy
+real_t edgrad[2];                    // this stores the average gradient energy
+real_t edrho[2];                     // this stores the avg. energy density over the box
+
+// values of model constants from g2parameters.h
+real_t mphi = 1.e-6;            // mass of phi field
+real_t phi0 = 0.193;            // initial avg phi field value
+real_t gsq = 2.5e-5;            // g^2 value for phi chi coupling
+real_t f0[2] = {phi0,0.};       // array storing intial phi and chi field values
+real_t df0[2] = {-0.142231,0.}; // array storing intial phi and chi field derivative values
+real_t grav = 1.;               // the gravitational constant
+real_t c = 1.;                  // speed of light, shouldn't change, if you do, fix all equations
+
+// values of model-independent parameters from g2parameters.h
+real_t L = 20.;         //  length of one side of box in prgm units
+real_t starttime = 0.;  // start time of simulation
+real_t endtime = 100.;  // end time of simulations
+real_t dt = 0.01;       // time step size
 
 
-int main()
+// Allocate space for fields. Other functions will be called via javascript.
+void alloc()
 {
-    omp_set_nested(1);//allows for nested parallelization
-    printf("\n\nLattice evolution program started\n\n");
-    output_parameters(); //Outputs general run information (info.txt)
-    printf("Info file made\n");
+    //allocates memory for the fields
+    field = (real_t(*)[nflds][NX][NY][NZ]) malloc(sizeof(real_t)*nflds*2*NX*NY*NZ);
     
-    field=(long double(*)[nflds][N][N][N]) malloc(sizeof(long double)*nflds*2*N*N*N);//allocates memory for the fields
-    printf("'field' memory allocated\n");
-    
-    dfield=(long double(*)[nflds][N][N][N]) malloc(sizeof(long double)*nflds*2*N*N*N);//allocates memory for the fields' time derivatives
-    printf("'dfield' memory allocated\n");
-    
-    printf("Memory allocated for all arrays\n\n");
-    printf("Starting run...\n\n");
-    
-    
-    for(t=starttime;t<=endtime;t+=dt)//This is the main for-loop over time. Note that the current t value is the time for the currently evaluated fields
-    {
-		
-        if(t==starttime)
-        {
-            initfields();//initializes fields as defined in model.h
-            printf("Fields initialized (no fluctuations)\n");
-            initexpansion();//start expansion;
-            printf("Expansion started\n");
-			
-            initfields();//do fluctuations
-            printf("Model Specific Initialization Completed\n");
-
-            printf("Time evolution begining\n");
-            
-			screenout();//outputs current pr time to screen (see g2output.cpp)
-			outputslice();//outputs slice values to file
-
-        }
-
-		step();//evolves the fields one step
-        
-		screenout();//outputs current pr time to screen
-        outputslice();//outputs slice values to file
-        
-	}
-#if spec_output==1
-    specClear();//clears fftw stuff needed for spectra at the end of the run
-#endif
-    printf("\nRun complete\n\n");
-    output_parameters();//finalizes any necessary info for the run to info.txt)
-    printf("GABE2.2 finished\n\n\n");
+    //allocates memory for the fields' time derivatives
+    dfield = (real_t(*)[nflds][NX][NY][NZ]) malloc(sizeof(real_t)*nflds*2*NX*NY*NZ);
 }
+
+// Just initialize things. 
+// Steps will be called separately (by javascript routines).
+void init()
+{
+    initfields(); //initializes fields as defined in model.h
+    initexpansion(); //start expansion;
+    initfields(); //do fluctuations
+}
+
+#ifdef EMSCRIPTEN_BINDINGS
+EMSCRIPTEN_BINDINGS(my_module) {
+    function("init", &init);
+    function("alloc", &alloc);
+}
+#endif

@@ -10,21 +10,20 @@
  Kenyon College
  John T. Giblin, Jr
  Tate Deskins and Hillary Child
- Last Updated: 06.27.2013
 */
 
-
-#include <stdio.h>//needed for printf fprintf
-#include <stdlib.h>//needed for malloc
-#include <math.h>//needed for fabs, tanh
-#include <time.h>//needed for time and ctime
-#include <fftw3.h>//needed for the rand initial conditions
+#include <stdlib.h> // needed for malloc
+#include <math.h>   // needed for fabs, tanh
+#include <time.h>   // needed for time and ctime
+#include <string>
 #include <unistd.h>
 
-#include <omp.h>// needed for omp
+#ifdef EMSCRIPTEN_BINDINGS
+#include <emscripten/bind.h> // for emscripten!
+using namespace emscripten;
+#endif
 
-#define omp_set_nested(x)
-#define omp_get_num_threads() 1
+typedef float real_t; // type used for simulation
 
 //this is a directive to declare all the common indecies for the fields
 #define DECLARE_INDEX int fld,i,j,k; 
@@ -34,13 +33,13 @@ LOOP DEFINITIONS
  ****************/
 //the following are definitions for looping over different field indicies
 
-#define fldLOOP for(fld=0;fld<nflds;fld++) for(i=0;i<N;i++) for(j=0;j<N;j++) for(k=0;k<N;k++)
+#define fldLOOP for(fld=0;fld<nflds;fld++) for(i=0;i<NX;i++) for(j=0;j<NY;j++) for(k=0;k<NZ;k++)
 //this loops over the fld and all three indicies
 
-#define LOOP for(i=0;i<N;i++) for(j=0;j<N;j++) for(k=0;k<N;k++)
+#define LOOP for(i=0;i<NX;i++) for(j=0;j<NY;j++) for(k=0;k<NZ;k++)
 //this loops over just the indicies (3D)
 
-#define LOOP2 for(j=0;j<N;j++) for(k=0;k<N;k++)
+#define LOOP2 for(j=0;j<NY;j++) for(k=0;k<NZ;k++)
 //this loops over just the j and k indicies (2d)
 
 #include "g2parameters.h"
@@ -49,33 +48,46 @@ LOOP DEFINITIONS
 /******************************
  global parameters DO NOT CHANGE
  ******************************/
-extern long double t;//this is the variable that stores the evolution time
+extern real_t t;                          // this is the variable that stores the evolution time
 
-extern long double (* field)[nflds][N][N][N];//this stores the field values for each step along the grid
-extern long double (* dfield)[nflds][N][N][N];//this stores the derivative of the field for each step along the grid
+extern real_t (* field)[nflds][NX][NY][NZ];  // this stores the field values for each step along the grid
+extern real_t (* dfield)[nflds][NX][NY][NZ]; // this stores the derivative of the field for each step along the grid
 
 //The following are all arrays of length two, one for each step of the RK2 integration
-extern long double a[2];//this stores the scale facator for each step
-extern long double adot[2];// this stores the time derivative of the scale factor
-extern long double edpot[2]; //this stores the average potential energy
-extern long double edkin[2]; //this stores the average kinetic energy
-extern long double edgrad[2]; //this stores the average gradient energy
-extern long double edrho[2]; // this stores the avg. energy density over the box
+extern real_t a[2];      // this stores the scale facator for each step
+extern real_t adot[2];   // this stores the time derivative of the scale factor
+extern real_t edpot[2];  // this stores the average potential energy
+extern real_t edkin[2];  // this stores the average kinetic energy
+extern real_t edgrad[2]; // this stores the average gradient energy
+extern real_t edrho[2];  // this stores the avg. energy density over the box
 
+
+/***********************
+Main file Header
+ ***********************/
+
+// allocate memory for fields
+void alloc();
+
+// initialize fields
+void init();
 
 /***********************
 Initialization Header
  ***********************/
 //These are the declerations of the initialization functions whose definitions are found in g2init.cpp
 
+// initializes all of the energy densities and scale factor as appropriet for the begining of the run
+void initexpansion();
 
-void initexpansion();// initializes all of the energy densities and scale factor as appropriet for the begining of the run
+// Allocates the memory for the dft for moving the random intialization in momentum space to configuration space
+void dftMemAlloc();
 
-void dftMemAlloc();// Allocates the memory for the dft for moving the random intialization in momentum space to configuration space
+// function which initializes the random conditions for fields f and df
+void randInit( real_t f[][N][N], real_t df[][N][N], real_t d2vdf2);
 
-void randInit( long double f[][N][N],long double df[][N][N],long double d2vdf2);//function which initializes the random conditions for fields f and df
-
-void initDestroy();//destroys the fftw extra stuffs needed only durring intialization
+//destroys the fftw extra stuffs needed only durring intialization
+void initDestroy();
 
 
 /************
@@ -83,15 +95,17 @@ Model Header
  ************/
  //These are the declerations of the functions defined in g2model.cpp
 
-void modelinfo(FILE *info);//function which prints model dependent information to info.txt
+// function to evaluate the potential of the field(s)
+real_t potential(int s, int i, int j, int k);
 
-long double potential(int s, int i, int j, int k);// function to evaluate the potential of the field(s)
+//function to store derivative wrt field of the potential
+real_t dVdf(int s, int fld, int i, int j, int k);
 
-long double dVdf(int s, int fld, int i, int j, int k);//function to store derivative wrt field of the potential
+// function holds the effective mass of the fields, returns 1. if none is stored.
+inline real_t effMass(int s, int fld);
 
-inline long double effMass(int s, int fld);// function holds the effective mass of the fields, returns 1. if none is stored.
-
-void initfields();//function to initialize the fields (and anything else)
+// function to initialize the fields (and anything else)
+void initfields();
 
 
 /************
@@ -100,37 +114,53 @@ void initfields();//function to initialize the fields (and anything else)
  
 // There are the declerations of the functions defined in g2functions.cpp
 
-long double pw2(long double x);//This function squares doubles
+//This function squares doubles
+real_t pw2(real_t x);
 
-int incr(int i);///for incremiting with periodic boundary conditions
+//for incremiting with periodic boundary conditions
+int incr(int i);
 
-int decr(int i);//for decremiting with periodic boundary conditions
+//for decremiting with periodic boundary conditions
+int decr(int i);
 
-long double laplacian(long double f[][N][N], int i, int j, int k);//this is the function to call for the 7pt laplacian
+//this is the function to call for the 7pt laplacian
+real_t laplacian(real_t f[][N][N], int i, int j, int k);
 
-long double dfdi(long double f[][N][N], int i, int j, int k);//spatial derivative of a field in the i (x) direction
+//spatial derivative of a field in the i (x) direction
+real_t dfdi(real_t f[][N][N], int i, int j, int k);
 
-long double dfdj(long double f[][N][N], int i, int j, int k);//spatial derivative of a field in the j (y) direction
+//spatial derivative of a field in the j (y) direction
+real_t dfdj(real_t f[][N][N], int i, int j, int k);
 
-long double dfdk(long double f[][N][N], int i, int j, int k);//spatial derivative of a field in the j (y) direction
+//spatial derivative of a field in the j (y) direction
+real_t dfdk(real_t f[][N][N], int i, int j, int k);
 
-long double dfdx(long double f[][N][N], int x, int i, int j, int k);//spatial derivative of the field f in the "x" direction (stores the three functions above).
+//spatial derivative of the field f in the "x" direction (stores the three functions above).
+real_t dfdx(real_t f[][N][N], int x, int i, int j, int k);
 
-long double gradF2(long double f[][N][N],int i,int j,int k);//takes the gradient of the field at a point and squares it
+//takes the gradient of the field at a point and squares it
+real_t gradF2(real_t f[][N][N],int i,int j,int k);
 
-long double avgGrad(int s);//calculates the average gradient energy over the box
+//calculates the average gradient energy over the box
+real_t avgGrad(int s);
 
-long double avgPot(int s);//calculates the average potential energy over the box
+//calculates the average potential energy over the box
+real_t avgPot(int s);
 
-long double avgKin(int s);// calculates the avereage kinetic energy over the box
+// calculates the avereage kinetic energy over the box
+real_t avgKin(int s);
 
-void calcEnergy(int s);// calculates the total average energy  over the box
+// calculates the total average energy  over the box
+void calcEnergy(int s);
 
-long double adf(int s);// calculates adot from the average energy density
+// calculates adot from the average energy density
+real_t adf(int s);
 
-long double ddfield(int s, int fld, int i, int j, int k);//equation of motion for the fields (klein gordon)
+// equation of motion for the fields (klein gordon)
+real_t ddfield(int s, int fld, int i, int j, int k);
 
-void step();//performs the full RK2 integration
+//performs the full RK2 integration
+void step();
 
 
 
@@ -139,25 +169,3 @@ void step();//performs the full RK2 integration
  *************/
  //Decleartion for all output functions found in g2output.cpp
 
-void outputfield(int first);//outputs the field values over box (dimension and sampling determined in g2parameters.h
-
-int slicewaitf();//evaluates the slicewait value (how long to wait between output slices) for the outputslice function
-
-void outputslice();//this function determines what is output how and when
-
-void output_parameters();//this creates the info.txt and populates it
-
-void readable_time(int tt, FILE *info);//prints meanigful time to the info.txt
-
-void screenout();//determines when there should be screen output
-
-void meansvars(); //outputs means and variances of all fields
-
-
-/**************
- Spectra Header
- **************/
-//Decleration for all functions found in g2spectra.cpp
-void specOut(int first);//the calculates and prints to file the spectra of the fields
-
-void specClear();//clears memory from the dft's used in specOut
