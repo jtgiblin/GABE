@@ -81,7 +81,7 @@ inline real_t effMass(int s, int fld)
 // here the user may decide how the fields will be initialized
 void initfields()
 {
-    static int first=0,s=0;
+    static int first=0, s=0;
     DECLARE_INDEX
 
     //loops over fld i,j,k
@@ -89,8 +89,9 @@ void initfields()
     LOOP
     {
         int idx = IDX(i,j,k);
-        field[FIELD(s,fld)][idx] = f0[fld] + 0.01*sin(2.0*3.14159*j/NY); // initialize each field as its initial value
-        dfield[FIELD(s,fld)][idx] = df0[fld] + 0.01*cos(2.0*3.14159*j/NY); // initialize each field derivative as its initial value
+        real_t r = sqrt( pw2(i - NX/2) + pw2(j - NY/2) + pw2(k - NZ/2) );
+        field[FIELD(s,fld)][idx] = f0[fld] + exp(-r*r/pw2(NX/5)); // initialize each field as its initial value + gaussian
+        dfield[FIELD(s,fld)][idx] = df0[fld] + 0.; // initialize each field derivative as its initial value
     }
         
     calcEnergy(0); //This is important -- needed for first step of evolution

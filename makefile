@@ -3,7 +3,7 @@ OFLAG = -O3 -ffast-math -flto
 FNS = -s EXPORTED_FUNCTIONS="['_copyout_fld','_sim_init','_sim_step']"
 FLAGS = --std=c++11 -s NO_EXIT_RUNTIME=1 $(OFLAG) $(FNS)
 LINKS = -L/opt/local/lib
-OUTFILE = gabe.js
+OUTFILE = gabem.js
 
 do: oclean compile
 
@@ -27,4 +27,4 @@ g2init.o: g2header.h g2parameters.h g2init.cpp
 	$(COMPILER) -c $(FLAGS)  g2init.cpp
 
 oclean: 
-	rm -f *.o *.js *.js.mem
+	rm -f *.o *.js.mem
