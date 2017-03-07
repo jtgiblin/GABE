@@ -7,7 +7,6 @@ gabe
 info.txt
 
 # emscripten output
-*.js
 *.js.mem
 
 # Generic stuff
