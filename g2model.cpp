@@ -40,24 +40,13 @@ s*/
 // user defined potential
 real_t potential(int s, int idx)
 {
-    return (0.5*PHI[idx]*PHI[idx]
-        + 0.5*COUP*PHI[idx]*PHI[idx]*CHI[idx]*CHI[idx]);
+    return 0;
 }
 
 // user defined derivative of the potential
 real_t dVdf(int s, int fld, int idx)
-
 {
-    switch (fld) {
-        case 0:
-            //derivative with respect to phi
-            return (PHI[idx] + COUP*CHI[idx]*CHI[idx]*PHI[idx]);
-        case 1:
-            //derivative with respect to chi
-            return (COUP*PHI[idx]*PHI[idx]*CHI[idx]);
-        default:
-            return 0;
-    }
+    return 0;
 }
 
 // the effective mass used for random inital conditions
@@ -101,7 +90,7 @@ void initfields()
     {
         int idx = IDX(i,j,k);
         field[FIELD(s,fld)][idx] = f0[fld] + 0.01*sin(2.0*3.14159*j/NY); // initialize each field as its initial value
-        dfield[FIELD(s,fld)][idx] = df0[fld]; // initialize each field derivative as its initial value
+        dfield[FIELD(s,fld)][idx] = df0[fld] + 0.01*cos(2.0*3.14159*j/NY); // initialize each field derivative as its initial value
     }
         
     calcEnergy(0); //This is important -- needed for first step of evolution

@@ -32,7 +32,7 @@ real_t mphi = 1.e-6;            // mass of phi field
 real_t phi0 = 0.193;            // initial avg phi field value
 real_t gsq = 2.5e-5;            // g^2 value for phi chi coupling
 real_t f0[2] = {phi0,0.};       // array storing intial phi and chi field values
-real_t df0[2] = {-0.142231,0.}; // array storing intial phi and chi field derivative values
+real_t df0[2] = {0.,0.};      // array storing intial phi and chi field derivative values
 real_t grav = 1.;               // the gravitational constant
 real_t c = 1.;                  // speed of light, shouldn't change, if you do, fix all equations
 
@@ -88,8 +88,6 @@ void init(int nx, int ny, int nz)
     initfields();
     // start expansion;
     initexpansion();
-    // do fluctuations
-    initfields();
 }
 
 #ifndef __EMSCRIPTEN__

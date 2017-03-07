@@ -8,6 +8,47 @@
 
   <body>
     <script type="text/javascript">
+      var sim_params; // global with simulation information
+
+      function init()
+      {
+        sim_params = {
+          "nx" : 32,
+          "ny" : 32,
+          "nz" : 32,
+          "steps" : 100,
+          "plot_interval" : 20, // milliseconds
+          "plot_data" : [{
+             z: [[0,0],[0,0]],
+             type: 'surface'
+          }],
+          "layout" : {
+            title: 'Simulation data',
+            autosize: true,
+            width: 500,
+            height: 500,
+            margin: {
+              l: 65,
+              r: 50,
+              b: 65,
+              t: 90,
+            }
+          }, // layout
+        }; // params
+
+        initializePlot(sim_params);
+        plotResults(sim_params);
+      } // init()
+
+      async function runSteps(params)
+      {
+        for(s = 0; s <= params.steps; s++)
+        {
+          console.log("Running step " + s + "/" + params.steps);
+          await sleep(50);
+          runStep();
+        }
+      }
 
       function getField(nx, ny, nz)
       {
@@ -29,13 +70,13 @@
         return result;
       }
 
-      function simInit()
+      function simInit(params)
       {
         sim_init = Module.cwrap(
           'sim_init', 'number',
           ['number', 'number', 'number']
         );
-        var msg = sim_init(16, 16, 16);
+        var msg = sim_init(params.nx, params.ny, params.nz);
         if(msg == 7) {
           document.getElementById("output").innerHTML += "Simulation initialized!\n";
         } else {
@@ -59,48 +100,51 @@
         return msg;
       }
 
-      function plotResults()
+      function initializePlot(params)
       {
-        var data = getField(16, 16, 16);
+        params.graphDiv = $("#graphDiv")[0];
+        Plotly.newPlot('graphDiv', params.plot_data, params.layout);
+      }
+
+      // asynchronous function, calls itself to continuously plot results
+      async function plotResults(params)
+      {
+        console.log("Plotting results...");
+        var data = getField(params.nx, params.ny, params.nz);
 
         // get a 2-d slice of data
         var z_data = [];
-        for(i=0;i<16;i++) {
+        for(i=0;i<params.nx;i++) {
           z_data[i] = [];
-          for(j=0;j<16;j++) {
-            z_data[i][j] = data[i*16 + j];
+          for(j=0;j<params.ny;j++) {
+            z_data[i][j] = data[i*params.ny + j];
           }
         }
 
-        var plot_data = [{
-           z: z_data,
-           type: 'surface'
-        }];
+        // do this instead of making a new plot each time:
+        // https://plot.ly/javascript/plotlyjs-function-reference/#plotly-redraw
+        sim_params.graphDiv.data[0].z = z_data;
+        Plotly.redraw(graphDiv);
 
-        var layout = {
-          title: 'Simulation data',
-          autosize: false,
-          width: 500,
-          height: 500,
-          margin: {
-            l: 65,
-            r: 50,
-            b: 65,
-            t: 90,
-          }
-        };
-
-        Plotly.newPlot('myDiv', plot_data, layout);
+        await sleep(sim_params.plot_interval);
+        plotResults(sim_params);
       }
 
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      $(document).ready(function() {
+        init();
+      });
     </script>
-    <input type='button' onclick="javascript:simInit();" value='1) Initialize a 16^3 Simulation' />
-    <input type='button' onclick="javascript:runStep();" value='2) Run a Step' />
-    <input type='button' onclick="javascript:plotResults();" value='3) Plot Results' />
+    <input type='button' onclick="javascript:simInit(sim_params);" value='1) Initialize a 32^3 Simulation' />
+    <input type='button' onclick="javascript:runStep();" value='2a) Run a Step' />
+    <input type='button' onclick="javascript:runSteps(sim_params);" value='2b) Run 100 steps' />
     <br />
     <br />
     <textarea rows="10" cols="50" id="output" disabled="disabled"></textarea>
-    <div id="myDiv"></div>
+    <div id="graphDiv"></div>
   </body>
 
 </html>
