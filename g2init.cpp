@@ -10,7 +10,7 @@
  Tate Deskins and Hillary Child
 */
 
-#include "g2header.h" //contains declerations for program functions.
+#include "g2header.h" //contains declarations for program functions.
 
 /** expansion initialization **/
 void initexpansion()
@@ -45,40 +45,40 @@ void initexpansion()
 #endif
 }
 
-/** global parameters needed for fftwl**/
+/** global parameters needed for fftw**/
 #if rand_init==1
 
-long double *inic;
-fftwl_complex *fkf, *fkd;
-fftwl_plan picf, picd;
+gNum *inic;
+fftw_complex *fkf, *fkd;
+fftw_plan picf, picd;
 
 
 void dftMemAlloc()
 {
-    fftwl_plan_with_nthreads(tot_num_thrds);
+    fftw_plan_with_nthreads(tot_num_thrds);
     
-    inic = (long double *) fftwl_malloc(sizeof(long double) * N * N * N);
+    inic = (gNum *) fftw_malloc(sizeof(gNum) * N * N * N);
     
-    fkf   = (fftwl_complex*) fftwl_malloc(sizeof(fftwl_complex) * N * N * (N/2+1));
-    fkd   = (fftwl_complex*) fftwl_malloc(sizeof(fftwl_complex) * N * N * (N/2+1));
+    fkf   = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N * N * (N/2+1));
+    fkd   = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N * N * (N/2+1));
     
-    picf = fftwl_plan_dft_c2r_3d(N, N, N, fkf, inic, FFTW_MEASURE);
-    picd = fftwl_plan_dft_c2r_3d(N, N, N, fkd, inic, FFTW_MEASURE);
+    picf = fftw_plan_dft_c2r_3d(N, N, N, fkf, inic, FFTW_MEASURE);
+    picd = fftw_plan_dft_c2r_3d(N, N, N, fkd, inic, FFTW_MEASURE);
 }
 
 /**function to initialize random initial conditions**/
 
-void randInit(long double f[][N][N],long double df[][N][N],long double d2vdf2)
+void randInit(gNum f[][N][N],gNum df[][N][N],gNum d2vdf2)
 {
     static int first=0;
     int i,j,k,tester;
-    long double i2,j2,k2, wk, randVar, randAngle;
-    long double dk2 = 4.*M_PI*M_PI/L/L;
-    long double dk = 2*M_PI/L;
-    long double fkRI1[2], fkRI2[2];
+    gNum i2,j2,k2, wk, randVar, randAngle;
+    gNum dk2 = 4.*M_PI*M_PI/L/L;
+    gNum dk = 2*M_PI/L;
+    gNum fkRI1[2], fkRI2[2];
     
     
-    long double H0=sqrt(8.*M_PI*grav/3.*edrho[0]);
+    gNum H0=sqrt(8.*M_PI*grav/3.*edrho[0]);
     //printf("%Lf\n",H0);
     if(first==0)
     {
@@ -113,56 +113,56 @@ void randInit(long double f[][N][N],long double df[][N][N],long double d2vdf2)
                         
 #if field_full_rand==1
                         
-                        wk = sqrt(dk2*((long double)i2 + (long double)j2 + (long double)k2) + d2vdf2);//dk*i\doti+d^2v/df^2
+                        wk = sqrt(dk2*((gNum)i2 + (gNum)j2 + (gNum)k2) + d2vdf2);//dk*i\doti+d^2v/df^2
                                                
                        
                         
 # ifdef spec_cut_off
                         
-                        randVar = (long double)rand()/(long double)RAND_MAX;
-                        randAngle = 2.*M_PI*(long double)rand()/(long double)RAND_MAX;
+                        randVar = (gNum)rand()/(gNum)RAND_MAX;
+                        randAngle = 2.*M_PI*(gNum)rand()/(gNum)RAND_MAX;
                         
-                        fkRI1[0] = rescale_B*cos(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L))*(1.-tanh(spec_smooth*(sqrt(i2+j2+k2)-N*spec_cut_off)))/2.;//long double
+                        fkRI1[0] = rescale_B*cos(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L))*(1.-tanh(spec_smooth*(sqrt(i2+j2+k2)-N*spec_cut_off)))/2.;//gNum
                         fkRI1[1] = rescale_B*sin(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L))*(1.-tanh(spec_smooth*(sqrt(i2+j2+k2)-N*spec_cut_off)))/2.;//imaginary
                         
-                        randVar = (long double)rand()/(long double)RAND_MAX;//unlike lattice easy (becuse that was an error
-                        randAngle = 2.*M_PI*(long double)rand()/(long double)RAND_MAX;
+                        randVar = (gNum)rand()/(gNum)RAND_MAX;//unlike lattice easy (becuse that was an error
+                        randAngle = 2.*M_PI*(gNum)rand()/(gNum)RAND_MAX;
 
-                        fkRI2[0] = rescale_B*cos(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L))*(1.-tanh(spec_smooth*(sqrt(i2+j2+k2)-N*spec_cut_off)))/2.;//long double
+                        fkRI2[0] = rescale_B*cos(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L))*(1.-tanh(spec_smooth*(sqrt(i2+j2+k2)-N*spec_cut_off)))/2.;//gNum
                         fkRI2[1] = rescale_B*sin(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L))*(1.-tanh(spec_smooth*(sqrt(i2+j2+k2)-N*spec_cut_off)))/2.;//imaginary
                         
 # else
                         
-                        randVar = (long double)rand()/(long double)RAND_MAX;
-                        randAngle = 2.*M_PI*(long double)rand()/(long double)RAND_MAX;
+                        randVar = (gNum)rand()/(gNum)RAND_MAX;
+                        randAngle = 2.*M_PI*(gNum)rand()/(gNum)RAND_MAX;
                         
-                        fkRI1[0] = rescale_B*cos(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L));//long double
+                        fkRI1[0] = rescale_B*cos(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L));//gNum
                         fkRI1[1] = rescale_B*sin(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L));//imaginary
                         
-                        randVar = (long double)rand()/(long double)RAND_MAX;//unlike lattice easy (becuse that was an error
-                        randAngle = 2.*M_PI*(long double)rand()/(long double)RAND_MAX;
+                        randVar = (gNum)rand()/(gNum)RAND_MAX;//unlike lattice easy (becuse that was an error
+                        randAngle = 2.*M_PI*(gNum)rand()/(gNum)RAND_MAX;
 
-                        fkRI2[0] = rescale_B*cos(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L));//long double
+                        fkRI2[0] = rescale_B*cos(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L));//gNum
                         fkRI2[1] = rescale_B*sin(randAngle)*sqrt(-log(randVar)/(2.*wk*L*L*L));//imaginary
 # endif
                         
 
-                        fkf[k + (N/2+1)*(j + N*i)][0] = (fkRI1[0] + fkRI2[0])/sqrt(2.);//long double
+                        fkf[k + (N/2+1)*(j + N*i)][0] = (fkRI1[0] + fkRI2[0])/sqrt(2.);//gNum
                         fkf[k + (N/2+1)*(j + N*i)][1] = (fkRI1[1] + fkRI2[1])/sqrt(2.);//imaginary
 
-                        fkd[k + (N/2+1)*(j + N*i)][0] = (fkRI2[1] - fkRI1[1])*wk/sqrt(2.) - H0*fkf[k + (N/2+1)*(j + N*i)][0];//long double
+                        fkd[k + (N/2+1)*(j + N*i)][0] = (fkRI2[1] - fkRI1[1])*wk/sqrt(2.) - H0*fkf[k + (N/2+1)*(j + N*i)][0];//gNum
                         fkd[k + (N/2+1)*(j + N*i)][1]= (fkRI1[0] - fkRI2[0])*wk/sqrt(2.) -   H0*fkf[k + (N/2+1)*(j + N*i)][1];//imaginary
 #endif
 #if field_full_rand==0
                         
-                        wk = sqrt(dk2*((long double)i2 + (long double)j2 + (long double)k2) + d2vdf2);//dk*i\doti+d^2v/df^2
+                        wk = sqrt(dk2*((gNum)i2 + (gNum)j2 + (gNum)k2) + d2vdf2);//dk*i\doti+d^2v/df^2
                         
                         
-                        fkf[k + (N/2+1)*(j + N*i)][0] = rescale_B*sqrt(1/(2.*wk*L*L*L))*(1.-tanh(spec_smooth*(sqrt(i2+j2+k2)-N*spec_cut_off)))/2.;//long double
+                        fkf[k + (N/2+1)*(j + N*i)][0] = rescale_B*sqrt(1/(2.*wk*L*L*L))*(1.-tanh(spec_smooth*(sqrt(i2+j2+k2)-N*spec_cut_off)))/2.;//gNum
                         fkf[k + (N/2+1)*(j + N*i)][1] = 0.;//(fkRI1[1])*sqrt(2.);//imaginary
                         
                         
-                        fkd[k + (N/2+1)*(j + N*i)][0] = - H0*fkf[k + (N/2+1)*(j + N*i)][0];//long double
+                        fkd[k + (N/2+1)*(j + N*i)][0] = - H0*fkf[k + (N/2+1)*(j + N*i)][0];//gNum
                         fkd[k + (N/2+1)*(j + N*i)][1]= 0.;//(fkRI1[0])*wk*sqrt(2.) -   H0*fkf[k + (N/2+1)*(j + N*i)][1];//imaginary
                         
 #endif
@@ -174,7 +174,7 @@ void randInit(long double f[][N][N],long double df[][N][N],long double d2vdf2)
         }
     }
     
-    fftwl_execute(picf);
+    fftw_execute(picf);
 #pragma omp parallel for private (j,k) num_threads (tot_num_thrds)
     LOOP
     {
@@ -182,7 +182,7 @@ void randInit(long double f[][N][N],long double df[][N][N],long double d2vdf2)
         
     }
     
-    fftwl_execute(picd);
+    fftw_execute(picd);
 #pragma omp parallel for private (j,k) num_threads (tot_num_thrds)
     LOOP
     {
@@ -196,10 +196,10 @@ void randInit(long double f[][N][N],long double df[][N][N],long double d2vdf2)
 
 void initDestroy()
 {
-    fftwl_destroy_plan(picf);
-    fftwl_destroy_plan(picd);
-    fftwl_free(inic);
-    fftwl_free(fkf);
-    fftwl_free(fkd);
+    fftw_destroy_plan(picf);
+    fftw_destroy_plan(picd);
+    fftw_free(inic);
+    fftw_free(fkf);
+    fftw_free(fkd);
 }
 #endif

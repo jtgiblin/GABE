@@ -16,12 +16,33 @@
  model constants
  ***************/
 
+#define fftw_flag 0  // 0 for double 1 for gNum
+#if fftw_flag == 1
+    #define gNum gNum
+    #define exp expl
+    #define sqrt sqrtl
+    #define cbrt cbrtl
+    #define log logl
+    #define fftw_plan_dft_c2r_3d fftwl_plan_dft_c2r_3d
+    #define fftw_plan_dft_r2c_3d fftwl_plan_dft_r2c_3d
+    #define fftw_execute fftwl_execute
+    #define fftw_plan fftwl_plan
+    #define fftw_destroy_plan fftwl_destroy_plan
+    #define fftw_complex fftwl_complex
+    #define fftw_alloc_complex fftwl_alloc_complex
+    #define fftw_alloc_real fftwl_alloc_real
+    #define fftw_execute_dft_r2c fftwl_execute_dft_r2c
+    #define fftw_execute_dft_c2r fftwl_execute_dft_c2r
+#else
+    #define gNum double
+#endif
+
 #define num_flds 2// number of fields
-const long double mphi=1.e-6;//mass of phi field
-const long double phi0=0.193;//initial avg phi field value
-const long double gsq=2.5e-5;//g^2 value for phi chi coupling
-const long double f0[2]={phi0,0.};//array storing initial phi and chi field values
-const long double df0[2]={-0.142231,0.};//array storing initial phi and chi field derivative values
+const gNum mphi=1.e-6;//mass of phi field
+const gNum phi0=0.193;//initial avg phi field value
+const gNum gsq=2.5e-5;//g^2 value for phi chi coupling
+const gNum f0[2]={phi0,0.};//array storing initial phi and chi field values
+const gNum df0[2]={-0.142231,0.};//array storing initial phi and chi field derivative values
 
 /***************************
  model independent parameters
@@ -30,10 +51,10 @@ const long double df0[2]={-0.142231,0.};//array storing initial phi and chi fiel
 #define tot_num_thrds 4//total (max) number of threads to run during program
 const int randseed=44463132;//seed for rand number generator
 const int N=128;//number of points along one side of grid
-const long double L=20.;// length of one side of box in prgm units
-const long double starttime=0.;//start time of simulation
-const long double endtime=100.;//end time of simulations
-const long double dt=0.01;//time step size
+const gNum L=20.;// length of one side of box in prgm units
+const gNum starttime=0.;//start time of simulation
+const gNum endtime=100.;//end time of simulations
+const gNum dt=0.01;//time step size
 #define expansion_type 1//(0 for no expansion 1 for evolving from adot 2 for user defined expansion 
 //(will need to adjust functions file (adot and such) and type two evolution in the step() function and g2init.cpp initexpansion() for user defined expansion )
 
@@ -41,7 +62,7 @@ const long double dt=0.01;//time step size
  model dependent parameters
  *************************/
 
-const long double rescale_B=mphi;//rescaling
+const gNum rescale_B=mphi;//rescaling
 
 #define rand_init 1//1 to have random initialization 0 to not (see model file)
 #define field_full_rand 1// 1 to have full random 0 to have symmetric kspace initialization
@@ -51,7 +72,7 @@ const long double rescale_B=mphi;//rescaling
 /****************
  output parameters
  *****************/
-const long double screentime=60;// in seconds how frequently output prgm time to screen
+const gNum screentime=60;// in seconds how frequently output prgm time to screen
 const int slicewait=10;//how many dt's to wait between outputs (1 for no waiting) if 0 then slicenumber will be used.
 const int slicenumber=20;//approx number of slices to output (only used if slicewait=0)
 const int field_sliceskip=2;//how many points to print in field profile (1 is every, 2 every two, 3 every three...)
@@ -65,8 +86,8 @@ const int specnumber=1; //how many spectra to out put (1= every output slice 2 e
  These are important DO NOT CHANGE
  *********************************/
 const int nflds=num_flds; //stores number of fields for looping
-const long double dx=L/((long double) N);//stores the change in x from point to point
-const long double gridsize=N*N*N;//stores size of grid for averaging
+const gNum dx=L/((gNum) N);//stores the change in x from point to point
+const gNum gridsize=N*N*N;//stores size of grid for averaging
 
 
 #if parallelize!=1

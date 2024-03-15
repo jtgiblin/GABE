@@ -3,7 +3,7 @@
  ****************************/
 
 /*
- This header file contains all the functions for the output of the data. Note that the outputslice() function needs to be generalized for n-fields and right now only gives meaning full output for 1 field. The only information outputed is the value of the field for the slice, the times atwhich the slices were output and the info.dat file.
+ This header file contains all the functions for the output of the data. Note that the outputslice() function needs to be generalized for n-fields and right now only gives meaning full output for 1 field. The only information outputted is the value of the field for the slice, the times at which the slices were output and the info.dat file.
  
  Copyright (2013): 
  Kenyon College
@@ -12,7 +12,7 @@
  Last Updated: 06.27.2013
 */
 
-#include "g2header.h" //contains declerations for program functions.
+#include "g2header.h" //contains declarations for program functions.
 
 //readable time variables
 
@@ -84,7 +84,7 @@ void meansvars()//calculates the mean and variance of each field
 	char name_[500];
 	static FILE *meansvarsout_;
 	int i, j, k, fld;
-	long double av,av_sq,var;
+	gNum av,av_sq,var;
 	
 	sprintf(name_,"./slices/meansvariances.dat");
 	meansvarsout_=fopen(name_,"a");
@@ -97,12 +97,12 @@ void meansvars()//calculates the mean and variance of each field
 		// Calculate field mean
 		LOOP
 		av += field[0][fld][i][j][k];
-		av = av/(long double)gridsize; // Convert sum to average
+		av = av/(gNum)gridsize; // Convert sum to average
 		av_sq = av*av; // Calculate mean squared for finding variance
 		// Calculate variance
 		LOOP
 		var += field[0][fld][i][j][k]*field[0][fld][i][j][k] - av_sq;
-		var = var/(long double)gridsize; // Convert sum to variance
+		var = var/(gNum)gridsize; // Convert sum to variance
 		// Output means and variances to files
 		fprintf(meansvarsout_," %Le %Le",av,var);
 		// Check for instability. See if the field has grown exponentially and become non-numerical at any point.
@@ -181,7 +181,7 @@ void outputslice()//externally called function for outputing the data from the r
 
 
 
-void output_parameters()//this creats info.dat which contains information about run parameters and statistics
+void output_parameters()//this creates info.dat which contains information about run parameters and statistics
 {
     static FILE *info;
     
@@ -277,7 +277,7 @@ void readable_time(int tt, FILE *info)
 
 
 
-void screenout()//this calculates the time ellapsed from last screen output before outputting current program time.
+void screenout()//this calculates the time elapsed from last screen output before outputting current program time.
 {
     
     time(&tCurrent);

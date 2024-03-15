@@ -4,10 +4,10 @@
 
 
 /*
- This header file contains contains all the model dependet functions necessary for the program. 
- Note that model dependent parameters should go in g2parameters.h. 
- Note that all functions must be in program units which are given by the following rescallings (pr denotes quantity used in program). 
- Any other model functions should be added here (and may need to tweek g2function.cpp and g2output.cpp).
+ This header file contains contains all the model dependent functions necessary for the program.
+ Note that model dependent parameters should go in g2parameters.h.
+ Note that all functions must be in program units which are given by the following rescaling (pr denotes quantity used in program).
+ Any other model functions should be added here (and may need to tweak g2function.cpp and g2output.cpp).
  
  
  B=mphi //Note that B may change depending on your model
@@ -25,7 +25,7 @@
  Last Updated: 06.27.2013
 */
 
-#include "g2header.h" //contains declerations for program functions.
+#include "g2header.h" //contains declarations for program functions.
 
 // Model specific details about the run to be output to an information file
 //change as needed
@@ -58,13 +58,13 @@ void modelinfo(FILE *info)
 
 #define COUP gsq/mphi/mphi //coupling term
 
-long double potential(int s, int i, int j, int k)//user defined potential
+gNum potential(int s, int i, int j, int k)//user defined potential
 {
     return (0.5*PHI[i][j][k]*PHI[i][j][k] + 0.5*COUP*PHI[i][j][k]*PHI[i][j][k]*CHI[i][j][k]*CHI[i][j][k]);
 }
 
 
-long double dVdf(int s, int fld, int i, int j, int k)//user defined derivative of the potential
+gNum dVdf(int s, int fld, int i, int j, int k)//user defined derivative of the potential
 
 {
 	switch (fld) {
@@ -80,9 +80,9 @@ long double dVdf(int s, int fld, int i, int j, int k)//user defined derivative o
 
 }
 
-inline long double effMass(int s, int fld)//the effective mass used for random inital conditions
+inline gNum effMass(int s, int fld)//the effective mass used for random initial conditions
 {
-    long double avemass=0.;  
+    gNum avemass=0.;  
     int i,j,k;
     switch (fld) {
         case 0:

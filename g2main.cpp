@@ -17,19 +17,19 @@
 /*********************
  GABE Header
  *********************/
- //contains all the parameters, changable and unchangeable
-#include "g2header.h" //contains declerations for program functions and parameters file
+ //contains all the parameters, changeable and unchangeable
+#include "g2header.h" //contains declarations for program functions and parameters file
 
 
-long double t=starttime;//this is the variable that stores the time
-long double (*field)[nflds][N][N][N];//this stores the field values for each step along the grid
-long double (*dfield)[nflds][N][N][N];//this stores the derivative of the field for each step along the grid
-long double a[2];//this stores the scale facator for each step
-long double adot[2];// this stores the time derivative of the scale factor
-long double edpot[2]; //this stores the average potential energy
-long double edkin[2]; //this stores the average kinetic energy
-long double edgrad[2]; //this stores the average gradient energy
-long double edrho[2]; // this stores the avg. energy density over the box
+gNum t=starttime;//this is the variable that stores the time
+gNum (*field)[nflds][N][N][N];//this stores the field values for each step along the grid
+gNum (*dfield)[nflds][N][N][N];//this stores the derivative of the field for each step along the grid
+gNum a[2];//this stores the scale factor for each step
+gNum adot[2];// this stores the time derivative of the scale factor
+gNum edpot[2]; //this stores the average potential energy
+gNum edkin[2]; //this stores the average kinetic energy
+gNum edgrad[2]; //this stores the average gradient energy
+gNum edrho[2]; // this stores the avg. energy density over the box
 
 
 int main()
@@ -39,10 +39,10 @@ int main()
     output_parameters(); //Outputs general run information (info.txt)
     printf("Info file made\n");
     
-    field=(long double(*)[nflds][N][N][N]) malloc(sizeof(long double)*nflds*2*N*N*N);//allocates memory for the fields
+    field=(gNum(*)[nflds][N][N][N]) malloc(sizeof(gNum)*nflds*2*N*N*N);//allocates memory for the fields
     printf("'field' memory allocated\n");
     
-    dfield=(long double(*)[nflds][N][N][N]) malloc(sizeof(long double)*nflds*2*N*N*N);//allocates memory for the fields' time derivatives
+    dfield=(gNum(*)[nflds][N][N][N]) malloc(sizeof(gNum)*nflds*2*N*N*N);//allocates memory for the fields' time derivatives
     printf("'dfield' memory allocated\n");
     
     printf("Memory allocated for all arrays\n\n");
