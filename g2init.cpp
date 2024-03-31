@@ -78,7 +78,7 @@ void randInit(gNum f[][N][N],gNum df[][N][N],gNum d2vdf2)
     gNum fkRI1[2], fkRI2[2];
     
     
-    gNum H0=sqrt(8.*M_PI*grav/3.*edrho[0]);
+    gNum H0=sqrt(8.*M_PI/3.*edrho[0]);
     //printf("%Lf\n",H0);
     if(first==0)
     {
