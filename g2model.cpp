@@ -75,6 +75,7 @@ gNum dVdf(int s, int fld, int i, int j, int k)//user defined derivative of the p
 			return (COUP*PHI[i][j][k]*PHI[i][j][k]*CHI[i][j][k]);
 			break;
 		default:
+            return 0.;
 			break;
 	}
 

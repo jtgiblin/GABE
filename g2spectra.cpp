@@ -24,7 +24,7 @@ void specOut(int first)
 {
     
     DECLARE_INDEX
-    const gNum spec_norm=pow(L/(gNum),3.); //normalization factor for the spectra
+    const gNum spec_norm=pow(L/(gNum)N,3.); //normalization factor for the spectra
     int px,py,pz;//tracks real place in momentum grid
     gNum pmagnitude;//stores the magnitude of the momentum vector for current point
     const int numbins=((int)(sqrt(3.)*N/2+1));//number of spectra bins based off of size of the grid

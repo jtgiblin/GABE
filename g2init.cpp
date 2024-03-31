@@ -25,10 +25,8 @@ void initexpansion()
     addot[1]=0;
     calcEnergy(0);
 #elif expansion_type==1
-    
     a[0]=1;
     calcEnergy(0);
-    edrhot=edrho[0];
     adot[0]=adf(0);
     //addot[0]=0;
     //addot[1]=0;

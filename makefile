@@ -3,9 +3,10 @@ COMPILER = g++
 OFLAG = -O3 
 FLAGS = -m64 -g -fopenmp $(OFLAG)
 #LINKS= -L/opt/local/lib -lfftw3l_threads -lfftw3l_omp -lfftw3l
-LINKS= -lfftw3l_threads -lfftw3l_omp -lfftw3l  
+#LINKS= -lfftw3l_threads -lfftw3l_omp -lfftw3l  #long double
+LINKS= -lfftw3_threads -lfftw3_omp -lfftw3 #double
 
-do: fclean dirmake oclean compile 
+do: fclean dirmake oclean compile
 
 xcmake : do
 	
