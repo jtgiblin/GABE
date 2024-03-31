@@ -141,7 +141,7 @@ void calcEnergy(int s) //Calculate the total energy
 
 gNum adf(int s)//the friedman equation
 {
-    return sqrt(8.*M_PI*grav/3.*edrho[s])*a[s];
+    return sqrt(8.*M_PI/3.*edrho[s])*a[s];
 }
 
 gNum ddfield( int s, int fld, int i, int j, int k)//evaluates the double time derivative of the field fld (s) at i,j,k.
