@@ -16,9 +16,9 @@
  model constants
  ***************/
 
-#define fftw_flag 0  // 0 for double 1 for gNum
+#define fftw_flag 0  // 0 for double 1 for long double
 #if fftw_flag == 1
-    #define gNum gNum
+    #define gNum long double
     #define exp expl
     #define sqrt sqrtl
     #define cbrt cbrtl
@@ -33,6 +33,9 @@
     #define fftw_alloc_real fftwl_alloc_real
     #define fftw_execute_dft_r2c fftwl_execute_dft_r2c
     #define fftw_execute_dft_c2r fftwl_execute_dft_c2r
+    #define fftw_malloc fftwl_malloc
+    #define fftw_free fftwl_free
+    #define fftw_plan_with_nthreads fftwl_plan_with_nthreads
 #else
     #define gNum double
 #endif
@@ -40,7 +43,7 @@
 #define num_flds 2// number of fields
 const gNum mphi=1.e-6;//mass of phi field
 const gNum phi0=0.193;//initial avg phi field value
-const gNum gsq=2.5e-5;//g^2 value for phi chi coupling
+const gNum gsq=2.5e-7;//g^2 value for phi chi coupling
 const gNum f0[2]={phi0,0.};//array storing initial phi and chi field values
 const gNum df0[2]={-0.142231,0.};//array storing initial phi and chi field derivative values
 
@@ -53,9 +56,9 @@ const int randseed=44463132;//seed for rand number generator
 const int N=128;//number of points along one side of grid
 const gNum L=20.;// length of one side of box in prgm units
 const gNum starttime=0.;//start time of simulation
-const gNum endtime=100.;//end time of simulations
-const gNum dt=0.01;//time step size
-#define expansion_type 1//(0 for no expansion 1 for evolving from adot 2 for user defined expansion 
+const gNum endtime=300.;//end time of simulations
+const gNum dt=L/(gNum)N/20.;//time step size
+#define expansion_type 1//(0 for no expansion 1 for evolving from adot 2 for user defined expansion
 //(will need to adjust functions file (adot and such) and type two evolution in the step() function and g2init.cpp initexpansion() for user defined expansion )
 
 /*************************

@@ -1,10 +1,15 @@
-COMPILER = g++
-#OFLAG = -O3 -I/opt/local/include
-OFLAG = -O3 
+COMPILER = g++-13
+#OFLAG = -O3 -I/opt/local/include #
+#OFLAG = -O3 -I/usr/local/include #mac
+OFLAG = -O3
 FLAGS = -m64 -g -fopenmp $(OFLAG)
-#LINKS= -L/opt/local/lib -lfftw3l_threads -lfftw3l_omp -lfftw3l
+#LINKS= -L/opt/local/lib -lfftw3l_threads -lfftw3l_omp -lfftw3l #long double ?
+#LINKS= -L/opt/local/lib -lfftw3_threads -fftw3_omp -fftw3 #double ?
+#LINKS= -L/usr/local/lib -lfftw3l_threads -lfftw3l_omp -lfftw3l #long double mac
+#LINKS= -L/usr/local/lib -lfftw3_threads -lfftw3_omp -lfftw3 #double mac
 #LINKS= -lfftw3l_threads -lfftw3l_omp -lfftw3l  #long double
 LINKS= -lfftw3_threads -lfftw3_omp -lfftw3 #double
+
 
 do: fclean dirmake oclean compile
 

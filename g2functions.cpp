@@ -95,7 +95,7 @@ gNum avgGrad(int s) //Find the average gradient energy
 #pragma omp parallel for private (j,k) reduction(+:grad) num_threads (tot_num_thrds)
         LOOP//loops over i,j,k
         {
-            grad+=gradF2(field[s][fld],i,j,k);//sums the gradient energy at each point 
+            grad-=field[s][fld][i][j][k]*laplacian(field[s][fld],i,j,k);//sums the gradient energy at each point
         }
     }
     return grad/gridsize/2./a[s]/a[s];//divides by the gridsize (to normalize) and 1/(2a^2) to get the gradient energy density
