@@ -1,4 +1,4 @@
-COMPILER = g++-13
+COMPILER = g++
 #OFLAG = -O3 -I/opt/local/include #
 #OFLAG = -O3 -I/usr/local/include #mac
 OFLAG = -O3
