@@ -36,8 +36,13 @@ void modelinfo(FILE *info)
     fprintf(info,"V =1/2 m^2 phi^2 \n\n");
     
     // Model specific parameter values
+#if fftw_flag==1
     fprintf(info,"mass= %Le m_pl\n",mphi);
 	fprintf(info,"g^2= %Le m_pl\n",gsq);
+#else
+    fprintf(info,"mass= %e m_pl\n",mphi);
+    fprintf(info,"g^2= %e m_pl\n",gsq);
+#endif
 	
 #if rand_init==1
     const char initType[6]="U";

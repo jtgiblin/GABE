@@ -100,10 +100,18 @@ void specOut(int first)
     
     for(i=0;i<numbins;i++)
     {
+#if fftw_flag==1
         fprintf(slicespectra,"%Le", sqrt(2*M_PI)*i/L);//this prints the mode
         for(fld=0;fld<nflds;fld++){
             fprintf(slicespectra," %Le", spec_power[fld][i]);//and the power associated with it for each field
         }
+#else
+        fprintf(slicespectra,"%e", sqrt(2*M_PI)*i/L);//this prints the mode
+        for(fld=0;fld<nflds;fld++){
+            fprintf(slicespectra," %e", spec_power[fld][i]);//and the power associated with it for each field
+        }
+
+#endif
         fprintf(slicespectra,"\n");
     }
 
