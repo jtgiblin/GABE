@@ -52,6 +52,7 @@ const gNum df0[2]={-0.142231,0.};//array storing initial phi and chi field deriv
  ***************************/
 #define parallelize 1// for parallelization set to 1 and set other variables set to 0 for no parallelization
 #define tot_num_thrds 4//total (max) number of threads to run during program
+#defite calc_gws 1//0 for no gravitational waves, 1 for gravitational waves
 const int randseed=44463132;//seed for rand number generator
 const int N=128;//number of points along one side of grid
 const gNum L=20.;// length of one side of box in prgm units

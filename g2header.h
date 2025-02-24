@@ -161,3 +161,45 @@ void meansvars(); //outputs means and variances of all fields
 void specOut(int first);//the calculates and prints to file the spectra of the fields
 
 void specClear();//clears memory from the dft's used in specOut
+
+#if calc_gws ==1
+/**************
+ Gravitational Wave Header
+ **************/
+//Declaration for all functions found in g2evolutionpert.cpp
+extern gNum (*h)[12][N][N][N/2+1];
+extern gNum (*l)[12][N][N][N/2+1];
+extern gNum (*T_gw)[12][N][N][N/2+1];
+extern fftw_plan plan_fft_gw;
+
+void evolve_perts(int s, int snew, gNum deet); //evolves the metric perturbations and derivatives
+void fft_stresstensor(int s); //calculate the spectral source terms
+void derivs(gNum h11,
+            gNum hi11,
+            gNum h12,
+            gNum hi12,
+            gNum h13,
+            gNum hi13,
+            gNum h22,
+            gNum hi22,
+            gNum h23,
+            gNum hi23,
+            gNum h33,
+            gNum hi33,
+            gNum l11,
+            gNum li11,
+            gNum l12,
+            gNum li12,
+            gNum l13,
+            gNum li13,
+            gNum l22,
+            gNum li22,
+            gNum l23,
+            gNum li23,
+            gNum l33,
+            gNum li33,    int ii, int jj, int k,
+            gNum hd[12], gNum ld[12],
+            gNum source_gw[12], int s); //input the perts and derivatives of the perts at some time TIME and some point ii, jj, k, and calc the first and second derivatives.
+
+
+#endif

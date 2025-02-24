@@ -219,8 +219,6 @@ void step()//this steps (integrates) the field and it time derivative via the rk
     
     calcEnergy(0);//calculates the energy at the end of the step.
 	
-	
-	
 #elif expansion_type==1
 	
     for(fld=0;fld<nflds;fld++)//first step of the Rk2 integration
@@ -233,7 +231,10 @@ void step()//this steps (integrates) the field and it time derivative via the rk
         }
     }
 	
-
+#if calc_gws == 1
+    evolve_perts(0, 1, 0.5 * dt); //evolve tensor modes
+#endif
+    
     a[1]=a[0]+.5*dt*adot[0];//this does the first step of the RK2 for the scale factor
     calcEnergy(1);//this calculates the energy based on this half step
     adot[1]=adf(1);//this updates adot based off of the energy at this step
@@ -246,16 +247,17 @@ void step()//this steps (integrates) the field and it time derivative via the rk
             field[0][fld][i][j][k]=field[0][fld][i][j][k]+dt*dfield[1][fld][i][j][k];
             dfield[0][fld][i][j][k]=dfield[0][fld][i][j][k]+dt*ddfield(1,fld,i,j,k);
         }
-    }	
+    }
+    
+#if calc_gws == 1
+    evolve_perts(1, 0, dt); //evolve tensor modes
+#endif
     
 	a[0]=a[0]+dt*adot[1];//this calculates the full step scale factor
     calcEnergy(0);//calculates the energy at the full step
     adot[0]=adf(0);//then calculates adot based off of the full step
     
-    
-    
-    
-    #elif expansion_type==2
+#elif expansion_type==2
 	
     for(fld=0;fld<nflds;fld++)//first step of the Rk2 integration
     {

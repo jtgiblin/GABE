@@ -5,12 +5,12 @@
 /*
  This file contains the functions needed to output spectra.
  
- Copyright (2013): 
+ Copyright (2013):
  Kenyon College
  John T. Giblin, Jr
  Tate Deskins and Hillary Child
  Last Updated: 06.27.2013
-*/
+ */
 
 #include "g2header.h" //contains declarations for program functions.
 
@@ -24,12 +24,22 @@ void specOut(int first)
 {
     
     DECLARE_INDEX
-    const gNum spec_norm=pow(L/(gNum)N,3.); //normalization factor for the spectra
+    const gNum spec_norm=pow(L/(gNum)N,6.); //normalization factor for the spectra, dx^6 -- NOTE this is from the definition that phi(k) = \int d^3x e^{-ikx} \phi(x), phi(x) = \frac{1}{(2\pi)^3} \int d^3k e^{ikx} \phi(k)
     int px,py,pz;//tracks real place in momentum grid
     gNum pmagnitude;//stores the magnitude of the momentum vector for current point
     const int numbins=((int)(sqrt(3.)*N/2+1));//number of spectra bins based off of size of the grid
+    
+#if calc_gws == 1
+    int numspec_out = 2*nflds + 3;
+#elif
+    int numspec_out = 2*nflds;
+#endif
+    
     gNum spec_power[nflds][numbins], spec_numpts[nflds][numbins];// holds the power and number of points in each spectra bin
-       
+    gNum spec_power_out[numspec][numbins];// holds the power and number of points in each spectra bin
+
+    
+    
     if(first==0)
     {
         
@@ -44,7 +54,7 @@ void specOut(int first)
     for(fld=0;fld<nflds;fld++){
         LOOP//this loop asigns the field values to the input array
         {
-                indft[k + N*(j + N*i)]=field[0][fld][i][j][k];
+            indft[k + N*(j + N*i)]=field[0][fld][i][j][k];
         }
         
         fftw_execute(spec_plan);//performs the dft
@@ -61,9 +71,9 @@ void specOut(int first)
                 for(k=1;k<N/2;k++) { //since the k=0 and k=n/2+1 are un matched we treat the separately
                     pz=k;//calculates the real momentum space position for the z direction
                     pmagnitude = sqrt(pw2(px)+pw2(py)+pw2(pz));//calculates the magnitude of the momentum of the point
-                    spec_power[fld][(int) pmagnitude]+=2.*(pw2(outdft[k + (N/2+1)*(j + N*i)][0])+pw2(outdft[k + (N/2+1)*(j + N*i)][1])); //adds the power in this mode to the proper bin times two 
+                    spec_power[fld][(int) pmagnitude]+=2.*(pw2(outdft[k + (N/2+1)*(j + N*i)][0])+pw2(outdft[k + (N/2+1)*(j + N*i)][1])); //adds the power in this mode to the proper bin times two
                     //since the symmetry in the dft we only need half of the z direction box (see fftw documentation)
-                    spec_numpts[fld][(int) pmagnitude]+=2;//adds two points for the 
+                    spec_numpts[fld][(int) pmagnitude]+=2;//adds two points for the
                 }
                 //this is the same procedure as seen above with out the multiplication by 2 since the zero mode and the k=N/2 modes are unmatched
                 k=0;
@@ -81,13 +91,103 @@ void specOut(int first)
         }
         
         for(i=0;i<numbins;i++){ //convert the sums in each bin to averages
-            if(spec_numpts[fld][i]>0)
-                spec_power[fld][i]=spec_power[fld][i]*spec_norm/((gNum) spec_numpts[fld][i]);
-            else
-                spec_power[fld][i]=0.;
+            if(spec_numpts[2*fld][i]>0){
+                spec_power_out[2*fld][i]=spec_power[fld][i]*spec_norm/((gNum) spec_numpts[fld][i]);
+                spec_power_out[2*fld+1][i]=pow((gNum)i*2*M_PI/L,3)*spec_power[fld+1][i]*spec_norm/((gNum) spec_numpts[fld+1][i]); //this is the dimensionless power spectrum k^3 P_k/2*pi^2
+            }
+            else {
+                spec_power_out[2*fld][i]=0.;
+                spec_power_out[2*fld+1][i]=0.;
+            }
         }
-		
-	}
+    }
+    
+#if calc_gws ==1
+    
+    hubtemp=sqrt(8.*M_PI/3.)*sqrt(edrho[0]);
+    
+    gNum dp_gw=2.*M_PI/(gNum)L*rescale_B*6.0e10/a[0]/sqrt(rescale_B*hubtemp); // Size of grid spacing in momentum space (converted to hertz)
+    gNum norm1_gw=4.e-5/pow(100.,.333)/M_PI/M_PI/24./pow(L,3.)/pw2(hubtemp);
+    
+    // Calculate magnitude of momentum in each bin
+    for(i=0;i<numbins_gw;i++) {
+        p[i]=dp_gw*(gNum)i;
+        f2_gw[i]=0.0;
+        numpoints_gw[i]=0;
+    }
+    
+    for(i=0;i<N;i++) {
+        px = (i<=N/2 ? i : i-N);
+        for(j=0;j<N;j++) {
+            py = (j<=N/2 ? j : j-N);
+            for(k=1;k<N/2;k++) {
+                pz = k;
+                pmagnitude_gw = sqrt(pw2(px)+pw2(py)+pw2(pz));
+                fp2_gw = pw2(l[0][0][i][j][k])
+                + pw2(l[0][1][i][j][k])
+                + 2.*pw2(l[0][2][i][j][k])
+                + 2.*pw2(l[0][3][i][j][k])
+                + 2.*pw2(l[0][4][i][j][k])
+                + 2.*pw2(l[0][5][i][j][k])
+                + pw2(l[0][6][i][j][k])
+                + pw2(l[0][7][i][j][k])
+                + 2.*pw2(l[0][8][i][j][k])
+                + 2.*pw2(l[0][9][i][j][k])
+                + pw2(l[0][10][i][j][k])
+                + pw2(l[0][11][i][j][k]);
+                numpoints_gw[(int)pmagnitude_gw] += 2;
+                f2_gw[(int)pmagnitude_gw] += 2.*fp2_gw;
+            }
+            
+            pz=0;
+            pmagnitude_gw=sqrt(pw2(px)+pw2(py)+pw2(pz));
+            fp2_gw = pw2(l[0][0][i][j][k])
+            + pw2(l[0][1][i][j][k])
+            + 2.*pw2(l[0][2][i][j][k])
+            + 2.*pw2(l[0][3][i][j][k])
+            + 2.*pw2(l[0][4][i][j][k])
+            + 2.*pw2(l[0][5][i][j][k])
+            + pw2(l[0][6][i][j][k])
+            + pw2(l[0][7][i][j][k])
+            + 2.*pw2(l[0][8][i][j][k])
+            + 2.*pw2(l[0][9][i][j][k])
+            + pw2(l[0][10][i][j][k])
+            + pw2(l[0][11][i][j][k]);
+            numpoints_gw[(int)pmagnitude_gw] += 1;
+            f2_gw[(int)pmagnitude_gw] += fp2_gw;
+            
+            pz = N/2;
+            pmagnitude_gw=sqrt(pw2(px)+pw2(py)+pw2(pz));
+            fp2_gw = pw2(l[0][0][i][j][k])
+            + pw2(l[0][1][i][j][k])
+            + 2.*pw2(l[0][2][i][j][k])
+            + 2.*pw2(l[0][3][i][j][k])
+            + 2.*pw2(l[0][4][i][j][k])
+            + 2.*pw2(l[0][5][i][j][k])
+            + pw2(l[0][6][i][j][k])
+            + pw2(l[0][7][i][j][k])
+            + 2.*pw2(l[0][8][i][j][k])
+            + 2.*pw2(l[0][9][i][j][k])
+            + pw2(l[0][10][i][j][k])
+            + pw2(l[0][11][i][j][k]);
+            numpoints_gw[(int)pmagnitude_gw] += 1;
+            f2_gw[(int)pmagnitude_gw] += fp2_gw;
+            
+        }
+    }
+    
+    for(i=0;i<numbins_gw;i++) {
+        if(numpoints_gw[i]>0) {// Converts sums to averages. (numpoints[i] should always be greater than zero.)
+            spec_power[2*nflds][i] = f2_gw[i]*spec_norm/((gNum) spec_numpts[fld][i]); //normal power spectrum of GW at present time
+            spec_power[2*nflds+1][i] = norm1_gw*pow((gNum)i*2*M_PI/L,3.)*f2_gw[i]/(gNum)numpoints_gw[i];
+        }
+        else {
+            spec_power[2*nflds][i]=0.
+            spec_power[2*nflds+1][i]=0.
+        }
+    }
+    
+#endif
     
     
     //Print the spectra to a file
@@ -102,19 +202,23 @@ void specOut(int first)
     {
 #if fftw_flag==1
         fprintf(slicespectra,"%Le", 2.*M_PI*i/L);//this prints the mode
-        for(fld=0;fld<nflds;fld++){
+        for(fld=0;fld<numspec_out;fld++){
             fprintf(slicespectra," %Le", spec_power[fld][i]);//and the power associated with it for each field
         }
+        fprintf(slicespectra,"%Le", p[i]);//this prints the present day frequency of GW
+        
 #else
         fprintf(slicespectra,"%e", 2.*M_PI*i/L);//this prints the mode
-        for(fld=0;fld<nflds;fld++){
+        for(fld=0;fld<numspec_out;fld++){
             fprintf(slicespectra," %e", spec_power[fld][i]);//and the power associated with it for each field
         }
-
+        fprintf(slicespectra,"%e", p[i]);//this prints the present day frequency of GW
+        
+        
 #endif
         fprintf(slicespectra,"\n");
     }
-
+    
     fclose(slicespectra);
     
 }

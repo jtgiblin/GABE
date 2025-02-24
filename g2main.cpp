@@ -31,6 +31,13 @@ gNum edkin[2]; //this stores the average kinetic energy
 gNum edgrad[2]; //this stores the average gradient energy
 gNum edrho[2]; // this stores the avg. energy density over the box
 
+#if calc_gws ==1 //if we have gravitational waves
+gNum (*h)[12][N][N][N/2+1];
+gNum (*l)[12][N][N][N/2+1];
+gNum hub = 0;
+gNum (*T_gw)[12][N][N][N/2+1];
+fftw_plan plan_fft_gw;
+#endif
 
 int main()
 {
@@ -41,6 +48,53 @@ int main()
     
     field=(gNum(*)[nflds][N][N][N]) malloc(sizeof(gNum)*nflds*2*N*N*N);//allocates memory for the fields
     printf("'field' memory allocated\n");
+    
+#if calc_gws ==1
+    h = (gNum (*)[12][N][N][N/2+1]) malloc(sizeof(gNum)*2.*(N/2+1)*N*N*12);
+    l = (gNum (*)[12][N][N][N/2+1]) malloc(sizeof(gNum)*2.*(N/2+1)*N*N*12);
+    T_gw = (gNum (*)[12][N][N][N/2+1]) malloc(sizeof(gNum)*2.*(N/2+1)*N*N*12);
+    
+    //zero out metric perturbations, just in case
+    for(int temps=0; temps<2; temps++){
+        int j;
+        int k;
+#pragma omp parallel for private (j,k) num_threads (tot_num_thrds)
+        for(int i=0;i<N;i++){
+            for(j=0;j<N;j++){
+                for(k=0;k<N/2+1;k++){
+                    
+                    h[temps][0][i][j][k]=0.;
+                    h[temps][1][i][j][k]=0.;
+                    h[temps][2][i][j][k]=0.;
+                    h[temps][3][i][j][k]=0.;
+                    h[temps][4][i][j][k]=0.;
+                    h[temps][5][i][j][k]=0.;
+                    h[temps][6][i][j][k]=0.;
+                    h[temps][7][i][j][k]=0.;
+                    h[temps][8][i][j][k]=0.;
+                    h[temps][9][i][j][k]=0.;
+                    h[temps][10][i][j][k]=0.;
+                    h[temps][11][i][j][k]=0.;
+                    
+                    l[temps][0][i][j][k]=0.;
+                    l[temps][1][i][j][k]=0.;
+                    l[temps][2][i][j][k]=0.;
+                    l[temps][3][i][j][k]=0.;
+                    l[temps][4][i][j][k]=0.;
+                    l[temps][5][i][j][k]=0.;
+                    l[temps][6][i][j][k]=0.;
+                    l[temps][7][i][j][k]=0.;
+                    l[temps][8][i][j][k]=0.;
+                    l[temps][9][i][j][k]=0.;
+                    l[temps][10][i][j][k]=0.;
+                    l[temps][11][i][j][k]=0.;
+                    
+                }
+            }
+        }
+    }
+    printf("Gravitational Wave calculation memory allocated\n");
+#endif
     
     dfield=(gNum(*)[nflds][N][N][N]) malloc(sizeof(gNum)*nflds*2*N*N*N);//allocates memory for the fields' time derivatives
     printf("'dfield' memory allocated\n");
