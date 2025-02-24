@@ -48,6 +48,8 @@ The following functions are used to calculate the gradient energy of the field o
 
 //If you know which partial derivative you need
 
+/*
+//First-order spatial derivatives
 gNum dfdi(gNum f[][N][N], int i, int j, int k)// spatial derivative of the field f in i (x) direction direction
 {
     return (f[incr(i)][j][k]-f[decr(i)][j][k])/2./dx;
@@ -61,6 +63,38 @@ gNum dfdj(gNum f[][N][N], int i, int j, int k)// spatial derivative of the field
 gNum dfdk(gNum f[][N][N], int i, int j, int k)// spatial derivative of the field f in k (z) direction
 {
     return (f[i][j][incr(k)]-f[i][j][decr(k)])/2./dx;
+}
+ */
+
+//Second-order spatial derivatives
+gNum dfdi(gNum f[][N][N], int i, int j, int k)
+{
+    return (
+        (1. / 12.) * f[decr(decr(i))][j][k]
+        + ((-2.) / 3.) * f[decr(i)][j][k]
+        + (2. / 3.) * f[incr(i)][j][k]
+        + ((-1.) / 12.) * f[incr(incr(i))][j][k]
+    ) / dx;
+}
+
+gNum dfdj(gNum f[][N][N], int i, int j, int k)
+{
+    return (
+        (1. / 12.) * f[i][decr(decr(j))][k]
+        + ((-2.) / 3.) * f[i][decr(j)][k]
+        + (2. / 3.) * f[i][incr(j)][k]
+        + ((-1.) / 12.) * f[i][incr(incr(j))][k]
+    ) / dx;
+}
+
+gNum dfdk(gNum f[][N][N], int i, int j, int k)
+{
+    return (
+        (1. / 12.) * f[i][j][decr(decr(k))]
+        + ((-2.) / 3.) * f[i][j][decr(k)]
+        + (2. / 3.) * f[i][j][incr(k)]
+        + ((-1.) / 12.) * f[i][j][incr(incr(k))]
+    ) / dx;
 }
 
 //If you want to loop over spatial derivatives this form is somewhat more convenient
