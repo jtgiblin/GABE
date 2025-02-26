@@ -42,7 +42,7 @@ fftw_plan plan_fft_gw;
 int main()
 {
     omp_set_nested(1);//allows for nested parallelization
-    printf("\n\nLattice evolution program started\n\n");
+    printf("\n\nGABE started!\n\n");
     output_parameters(); //Outputs general run information (info.txt)
     printf("Info file made\n");
     
@@ -116,7 +116,7 @@ int main()
             initfields();//do fluctuations
             printf("Model Specific Initialization Completed\n");
 
-            printf("Time evolution begining\n");
+            printf("Time evolution beginning\n");
             
 			screenout();//outputs current pr time to screen (see g2output.cpp)
 			outputslice();//outputs slice values to file

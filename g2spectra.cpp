@@ -30,13 +30,13 @@ void specOut(int first)
     const int numbins=((int)(sqrt(3.)*N/2+1));//number of spectra bins based off of size of the grid
     
 #if calc_gws == 1
-    int numspec_out = 2*nflds + 3;
-#elif
+    int numspec_out = 2*nflds + 2;
+#else
     int numspec_out = 2*nflds;
 #endif
     
     gNum spec_power[nflds][numbins], spec_numpts[nflds][numbins];// holds the power and number of points in each spectra bin
-    gNum spec_power_out[numspec][numbins];// holds the power and number of points in each spectra bin
+    gNum spec_power_out[numspec_out][numbins];// holds the power and number of points in each spectra bin
 
     
     
@@ -91,9 +91,9 @@ void specOut(int first)
         }
         
         for(i=0;i<numbins;i++){ //convert the sums in each bin to averages
-            if(spec_numpts[2*fld][i]>0){
+            if(spec_numpts[fld][i]>0){
                 spec_power_out[2*fld][i]=spec_power[fld][i]*spec_norm/((gNum) spec_numpts[fld][i]);
-                spec_power_out[2*fld+1][i]=pow((gNum)i*2*M_PI/L,3)*spec_power[fld+1][i]*spec_norm/((gNum) spec_numpts[fld+1][i]); //this is the dimensionless power spectrum k^3 P_k/2*pi^2
+                spec_power_out[2*fld+1][i]=pow((gNum)i*2.*M_PI/L,3)*spec_power[fld][i]*spec_norm/((gNum) spec_numpts[fld][i])/2./M_PI/M_PI; //this is the dimensionless power spectrum k^3 P_k/2*pi^2
             }
             else {
                 spec_power_out[2*fld][i]=0.;
@@ -104,13 +104,19 @@ void specOut(int first)
     
 #if calc_gws ==1
     
-    hubtemp=sqrt(8.*M_PI/3.)*sqrt(edrho[0]);
+    int numpoints_gw[(int)(1.73205*(N/2))+1]; // Number of points in each momentum bin
+    gNum p[(int)(1.73205*(N/2))+1];
+    gNum f2_gw[(int)(1.73205*(N/2))+1]; // Values for each bin: Momentum, |F-k|^2, n_k
+    gNum pmagnitude_gw;
+    gNum fp2_gw;
     
-    gNum dp_gw=2.*M_PI/(gNum)L*rescale_B*6.0e10/a[0]/sqrt(rescale_B*hubtemp); // Size of grid spacing in momentum space (converted to hertz)
-    gNum norm1_gw=4.e-5/pow(100.,.333)/M_PI/M_PI/24./pow(L,3.)/pw2(hubtemp);
+    gNum hubtemp=sqrt(8.*M_PI/3.)*sqrt(edrho[0]);
+    
+    gNum dp_gw=2.*M_PI/(gNum)L; //this can be modified to go to today
+    gNum norm1_gw=4.e-5/pow(100.,.333)/24./M_PI/M_PI/pow(L,3.)/pw2(hubtemp); //converted to today
     
     // Calculate magnitude of momentum in each bin
-    for(i=0;i<numbins_gw;i++) {
+    for(i=0;i<numbins;i++) {
         p[i]=dp_gw*(gNum)i;
         f2_gw[i]=0.0;
         numpoints_gw[i]=0;
@@ -176,14 +182,14 @@ void specOut(int first)
         }
     }
     
-    for(i=0;i<numbins_gw;i++) {
+    for(i=0;i<numbins;i++) {
         if(numpoints_gw[i]>0) {// Converts sums to averages. (numpoints[i] should always be greater than zero.)
-            spec_power[2*nflds][i] = f2_gw[i]*spec_norm/((gNum) spec_numpts[fld][i]); //normal power spectrum of GW at present time
-            spec_power[2*nflds+1][i] = norm1_gw*pow((gNum)i*2*M_PI/L,3.)*f2_gw[i]/(gNum)numpoints_gw[i];
+            spec_power_out[2*nflds][i] = f2_gw[i]*spec_norm/((gNum) numpoints_gw[i]); //normal power spectrum of GW at present time
+            spec_power_out[2*nflds+1][i] = norm1_gw*pow((gNum)i*2*M_PI/L,3.)*f2_gw[i]/(gNum)numpoints_gw[i];
         }
         else {
-            spec_power[2*nflds][i]=0.
-            spec_power[2*nflds+1][i]=0.
+            spec_power_out[2*nflds][i]=0.;
+            spec_power_out[2*nflds+1][i]=0.;
         }
     }
     
@@ -203,17 +209,20 @@ void specOut(int first)
 #if fftw_flag==1
         fprintf(slicespectra,"%Le", 2.*M_PI*i/L);//this prints the mode
         for(fld=0;fld<numspec_out;fld++){
-            fprintf(slicespectra," %Le", spec_power[fld][i]);//and the power associated with it for each field
+            fprintf(slicespectra," %Le", spec_power_out[fld][i]);//and the power associated with it for each field
         }
-        fprintf(slicespectra,"%Le", p[i]);//this prints the present day frequency of GW
+#if calc_gws==1
+        fprintf(slicespectra," %Le", p[i]);//this prints the present day frequency of GW
+#endif
         
 #else
         fprintf(slicespectra,"%e", 2.*M_PI*i/L);//this prints the mode
         for(fld=0;fld<numspec_out;fld++){
-            fprintf(slicespectra," %e", spec_power[fld][i]);//and the power associated with it for each field
+            fprintf(slicespectra," %e", spec_power_out[fld][i]);//and the power associated with it for each field
         }
-        fprintf(slicespectra,"%e", p[i]);//this prints the present day frequency of GW
-        
+#if calc_gws==1
+        fprintf(slicespectra," %e", p[i]);//this prints the present day frequency of GW
+#endif
         
 #endif
         fprintf(slicespectra,"\n");

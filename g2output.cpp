@@ -193,7 +193,7 @@ void outputslice()//externally called function for outputing the data from the r
         
         
         /*times file output */
-        //this routine outputs time, scalefactor, scalfactor derivative, hubble constant, and energy componets at each slice output
+        //this routine outputs time, scale factor, scale factor derivative, hubble constant, and energy components at each slice output
         slicetime=fopen("./slices/slices_time.dat","a");
         //slicetime=fopen("slices_time.dat","a");
 #if fftw_flag==1
