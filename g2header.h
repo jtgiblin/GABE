@@ -132,6 +132,7 @@ gNum ddfield(int s, int fld, int i, int j, int k);//equation of motion for the f
 
 void step();//performs the full RK2 integration
 
+gNum calcrho(int s, int i, int j, int k); //calculates rho at a point
 
 
 /**************

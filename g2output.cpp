@@ -1,6 +1,6 @@
 /****************************
-                  OUTPUT FILE
-                  ****************************/
+ OUTPUT FILE
+ ****************************/
 
 /*
  This header file contains all the functions for the output of the data. Note that the outputslice() function needs to be generalized for n-fields and right now only gives meaning full output for 1 field. The only information outputted is the value of the field for the slice, the times at which the slices were output and the info.dat file.
@@ -32,9 +32,18 @@ void outputfield(int first)//outputs the field values
     //sprintf(name,"slices_field%d_%d.dat", fld, first);
     slicefield=fopen(name,"w");
     
-#if field_outdim==3//outputs slice for 3dimensions
-    for(int i=0;i<N;i+=field_sliceskip){
-        for(int j=0;j<N;j+=field_sliceskip){
+#if field_outdim>2//outputs slice for 3dimensions
+    for(int i=0;i<N;i+=field_sliceskip)
+#else
+        i=0
+#endif
+    {
+#if field_outdim>1//outputs slice for 3dimensions
+        for(int j=0;j<N;j+=field_sliceskip)
+#else
+            j=0
+#endif
+        {
             for(int k=0;k<N;k+=field_sliceskip){
                 for(fld=0;fld<nflds,fld++){
 #if fftw_flag==1
@@ -42,51 +51,19 @@ void outputfield(int first)//outputs the field values
 #else
                     fprintf(slicefield,"%e ", field[0][fld][i][j][k]);//,rescale_B*dfield[0][fld][i][j][k]);
 #endif
-                    fprintf(slicefield,"\n");
                 }
+#if fftw_flag==1
+                fprintf(rho(0,i,j,k),"%Le ", field[0][fld][i][j][k]);//,rescale_B*dfield[0][fld][i][j][k]);
+#else
+                fprintf(rho(0,i,j,k),"%e ", field[0][fld][i][j][k]);//,rescale_B*dfield[0][fld][i][j][k]);
+#endif
+                
                 fprintf(slicefield,"\n");
             }
-            fprintf(slicefield,"\n");
         }
     }
-    
-#elif field_outdim==2//outputs slice for 2dimensions
-    
-    for(int j=0;j<N;j+=field_sliceskip)
-    {
-        for(int k=0;k<N;k+=field_sliceskip)
-        {
-            for(int fld=0;fld<nflds;fld++)
-            {
-#if fftw_flag==1
-                fprintf(slicefield,"%Le ", field[0][fld][0][j][k]);
-#else
-                fprintf(slicefield,"%e ", field[0][fld][0][j][k]);
-#endif
-            }
-            fprintf(slicefield, "\n");
-        }
-        fprintf(slicefield, "\n");
-    }
-    
-    
-#elif field_outdim==1//outputs slice for 1dimension
-    
-    for(int k=0;k<N;k+=field_sliceskip)
-    {
-        for(int fld=0;fld<nflds;fld++)
-        {
-#if fftw_flag==1
-                fprintf(slicefield,"%Le ", field[0][fld][0][0][k]);
-#else
-                fprintf(slicefield,"%e ", field[0][fld][0][0][k]);
-#endif        }
-        fprintf(slicefield, "\n");
-        
-        
-    }
-    
-#endif
+
+
     fclose(slicefield);
 }
 
@@ -105,7 +82,7 @@ void meansvars()//calculates the mean and variance of each field
 #else
     fprintf(meansvarsout_,"%f",t);
 #endif
-
+    
     for(fld=0;fld<nflds;fld++)
     {
         av=0.;
@@ -269,7 +246,7 @@ void output_parameters()//this creates info.dat which contains information about
         readable_time((int)(tFinish-tStart),info);
         fprintf(info,"\n");
         fprintf(info, "\nFinal scale factor is %e\n",a[0]);
-
+        
 #endif
         
     }
