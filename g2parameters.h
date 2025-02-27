@@ -55,7 +55,7 @@ const gNum df0[2]={-0.142231,0.};//array storing initial phi and chi field deriv
 #define calc_gws 0//0 for no gravitational waves, 1 for gravitational waves
 const int randseed=44463132;//seed for rand number generator
 const int N=64;//number of points along one side of grid
-const gNum L=5.;// length of one side of box in prgm units
+const gNum L=10.;// length of one side of box in prgm units
 const gNum starttime=0.;//start time of simulation
 const gNum endtime=150.;//end time of simulations
 const gNum dt=L/(gNum)N/20.;//time step size
