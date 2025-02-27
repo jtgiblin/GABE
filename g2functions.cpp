@@ -176,9 +176,9 @@ void calcEnergy(int s) //Calculate the total energy
 gNum calcrho(int s, int i, int j, int k){ //calculates rho at a point
     
     gNum rho = potential(s,i,j,k);
-    for (fld = 0; fld<nflds; fld++){
+    for (int fld = 0; fld<nflds; fld++){
         rho += (.5*dfield[s][fld][i][j][k]*dfield[s][fld][i][j][k] +
-                .5*(dfdi(f,i,j,k)*dfdi(f,i,j,k)+dfdj(f,i,j,k)*dfdj(f,i,j,k)+dfdk(f,i,j,k)*dfdk(f,i,j,k))/a[s]/a[s]);
+                .5*gradF2(field[0][fld],i,j,k)/a[s]/a[s]);
     }
     
     return rho;
