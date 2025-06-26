@@ -24,7 +24,8 @@ void specOut(int first)
 {
     
     DECLARE_INDEX
-    const gNum spec_norm=pow(L/(gNum)N,6.); //normalization factor for the spectra, dx^6 -- NOTE this is from the definition that phi(k) = \int d^3x e^{-ikx} \phi(x), phi(x) = \frac{1}{(2\pi)^3} \int d^3k e^{ikx} \phi(k)
+    const gNum spec_norm=pow(L/(gNum)N,6.)*pow(2.*M_PI/L,3.); //normalization factor for the spectra, dx^6 -- NOTE this is from the definition that phi(k) = \int d^3x e^{-ikx} \phi(x), phi(x) = \frac{1}{(2\pi)^3} \int d^3k e^{ikx} \phi(k)
+        //NOTE there is a factor of (2pi/L)^3 to convert the amplitude of the discrete |\phi(k)|^2 to the continuum one
     int px,py,pz;//tracks real place in momentum grid
     gNum pmagnitude;//stores the magnitude of the momentum vector for current point
     const int numbins=((int)(sqrt(3.)*N/2+1));//number of spectra bins based off of size of the grid
