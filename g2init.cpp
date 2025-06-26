@@ -22,7 +22,6 @@ void initexpansion()
     //addot[1]=0;
     a[1]=1;
     adot[1]=0;
-    addot[1]=0;
     calcEnergy(0);
 #elif expansion_type==1
     a[0]=1;
