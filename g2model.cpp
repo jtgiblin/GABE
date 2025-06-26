@@ -129,7 +129,7 @@ void initfields()//here the user may decide how the fields will be initialized
     {
 #if rand_init==1
 		for(fld=0; fld<nflds; fld++){
-			randInit(field[s][fld],dfield[s][fld],effMass(s,fld));//adds random intial conditions ontop of mean value above
+			randInit(field[s][fld],dfield[s][fld],effMass(s,fld));//adds random initial conditions on top of mean value above
 		}
         initDestroy();
 		printf("Fields fluctuated\n");
